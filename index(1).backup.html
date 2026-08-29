@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTPRO — Login & Register</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: #0b0b14;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 430px;
+    padding: 20px;
+}
+
+.card {
+    background: #151522;
+    border: 1px solid #29293b;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+}
+
+.logo {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    color: #a855f7;
+}
+
+.subtitle {
+    text-align: center;
+    color: #9999aa;
+    margin-bottom: 25px;
+}
+
+.tabs {
+    display: flex;
+    background: #0e0e18;
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 22px;
+}
+
+.tabs button {
+    flex: 1;
+    border: 0;
+    padding: 12px;
+    border-radius: 8px;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.tabs button.active {
+    background: #8b3dff;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 7px;
+    color: #c8c8d4;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #303044;
+    border-radius: 9px;
+    background: #0d0d17;
+    color: white;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #994cff;
+}
+
+button.primary {
+    width: 100%;
+    border: 0;
+    border-radius: 9px;
+    padding: 14px;
+    background: #8b3dff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+button.primary:hover {
+    background: #9b55ff;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.error {
+    color: #ff6b6b;
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.message {
+    color: #aaa;
+    font-size: 13px;
+    margin: 12px 0;
+    text-align: center;
+}
+
+.verify-code {
+    text-align: center;
+    letter-spacing: 8px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.demo-code {
+    background: #21172e;
+    border: 1px solid #633b80;
+    padding: 12px;
+    border-radius: 9px;
+    text-align: center;
+    margin: 15px 0;
+}
+
+.demo-code strong {
+    color: #d08cff;
+    font-size: 20px;
+}
+
+.resend {
+    background: none;
+    border: 0;
+    color: #b66cff;
+    cursor: pointer;
+    display: block;
+    margin: 14px auto;
+}
+
+.dashboard {
+    text-align: center;
+}
+
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #8b3dff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.balance {
+    background: #0e0e18;
+    border: 1px solid #2c2c40;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0;
+}
+
+.balance span {
+    color: #999;
+    font-size: 13px;
+}
+
+.balance strong {
+    display: block;
+    font-size: 30px;
+    margin-top: 5px;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.actions button {
+    padding: 12px;
+    border-radius: 9px;
+    border: 1px solid #343447;
+    background: #10101b;
+    color: white;
+    cursor: pointer;
+}
+
+.logout {
+    width: 100%;
+    margin-top: 12px;
+    padding: 13px;
+    border: 0;
+    border-radius: 9px;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+}
+
+#toast {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #242433;
+    border: 1px solid #3b3b52;
+    padding: 12px 20px;
+    border-radius: 9px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+}
+
+#toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- AUTH -->
+    <div id="auth" class="card">
+
+        <div class="logo">TTPRO</div>
+        <div class="subtitle">Account Login</div>
+
+        <div class="tabs">
+            <button id="loginTab" class="active">
+                Login
+            </button>
+
+            <button id="registerTab">
+                Register
+            </button>
+        </div>
+
+        <!-- LOGIN -->
+        <form id="loginForm">
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input
+                    id="loginPhone"
+                    type="tel"
+                    placeholder="9XXXXXXXXX"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input
+                    id="loginPassword"
+                    type="password"
+                    placeholder="Enter password"
+                    required
+                >
+            </div>
+
+            <div id="loginError" class="error"></div>
+
+            <button class="primary" type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <!-- REGISTER -->
+        <form id="registerForm" class="hidden">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input
+                    id="regName"
+                    type="text"
+                    placeholder="Your name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Country</label>
+
+                <select id="country" required>
+                    <option value="">Select country</option>
+                    <option value="PH">Philippines</option>
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="GB">United Kingdom</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+
+                <input
+                    id="regPhone"
+                    type="tel"
+                    placeholder="+639XXXXXXXXX"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+
+                <input
+                    id="regPassword"
+                    type="password"
+                    placeholder="Create password"
+                    minlength="6"
+                    required
+                >
+            </div>
+
+            <div id="registerError" class="error"></div>
+
+            <button class="primary" type="submit">
+                Register
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- VERIFY -->
+    <div id="verify" class="card hidden">
+
+        <div class="logo">TTPRO</div>
+
+        <h3 style="text-align:center">
+            Verify Your Phone
+        </h3>
+
+        <p class="message">
+            Verification code for
+            <strong id="maskedPhone"></strong>
+        </p>
+
+        <div class="demo-code">
+            Demo verification code:
+            <br>
+            <strong id="demoCode">------</strong>
+        </div>
+
+        <input
+            id="verifyCode"
+            class="verify-code"
+            type="text"
+            maxlength="6"
+            placeholder="000000"
+        >
+
+        <div id="verifyMsg" class="message"></div>
+
+        <button id="verifyBtn" class="primary">
+            Verify Account
+        </button>
+
+        <button id="resend" class="resend">
+            Resend Code
+        </button>
+
+    </div>
+
+
+    <!-- APP -->
+    <div id="app" class="card hidden">
+
+        <div class="dashboard">
+
+            <div id="avatar" class="avatar">
+                A
+            </div>
+
+            <h2>
+                Welcome,
+                <span id="userName">User</span>
+            </h2>
+
+            <p class="message">
+                Your account is verified.
+            </p>
+
+            <div class="balance">
+                <span>Available Balance</span>
+                <strong>₱0.00</strong>
+            </div>
+
+            <div class="actions">
+
+                <button id="history">
+                    Settlement History
+                </button>
+
+                <button id="bell">
+                    Notifications
+                </button>
+
+            </div>
+
+            <button id="logout" class="logout">
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast"></div>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+const auth = $("auth");
+const verify = $("verify");
+const app = $("app");
+
+let pendingUser = null;
+
+
+/* =========================
+   TOAST
+========================= */
+
+function toast(msg) {
+
+    $("toast").textContent = msg;
+
+    $("toast").classList.add("show");
+
+    setTimeout(() => {
+        $("toast").classList.remove("show");
+    }, 2200);
+}
+
+
+/* =========================
+   TABS
+========================= */
+
+function switchTab(tab) {
+
+    $("loginTab").classList.toggle(
+        "active",
+        tab === "login"
+    );
+
+    $("registerTab").classList.toggle(
+        "active",
+        tab === "register"
+    );
+
+    $("loginForm").classList.toggle(
+        "hidden",
+        tab !== "login"
+    );
+
+    $("registerForm").classList.toggle(
+        "hidden",
+        tab !== "register"
+    );
+}
+
+$("loginTab").onclick = () => switchTab("login");
+
+$("registerTab").onclick = () => switchTab("register");
+
+
+/* =========================
+   REGISTER
+========================= */
+
+$("registerForm").onsubmit = async e => {
+
+    e.preventDefault();
+
+    $("registerError").textContent = "";
+
+    const name =
+        $("regName").value.trim();
+
+    const country =
+        $("country").value;
+
+    const phone =
+        $("regPhone").value.trim();
+
+    const password =
+        $("regPassword").value;
+
+    if (password.length < 6) {
+        $("registerError").textContent =
+            "Password must be at least 6 characters.";
+        return;
+    }
+
+    if (!name || !country || !phone) {
+        $("registerError").textContent =
+            "Please complete all fields.";
+        return;
+    }
+
+
+    /* Check existing account */
+
+    const existing =
+        JSON.parse(
+            localStorage.getItem("ttproUser")
+            || "null"
+        );
+
+    if (
+        existing &&
+        existing.phone === phone
+    ) {
+
+        $("registerError").textContent =
+            "An account with this phone already exists.";
+
+        return;
+    }
+
+
+    /* Generate demo verification code */
+
+    const code =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        ).toString();
+
+
+    pendingUser = {
+        name,
+        country,
+        phone,
+        password,
+        verified: false
+    };
+
+
+    localStorage.setItem(
+        "ttproPendingUser",
+        JSON.stringify(pendingUser)
+    );
+
+    localStorage.setItem(
+        "ttproVerificationCode",
+        code
+    );
+
+
+    $("maskedPhone").textContent =
+        maskPhone(phone);
+
+    $("demoCode").textContent = code;
+
+    $("verifyCode").value = "";
+
+    $("verifyMsg").textContent =
+        "Enter the 6-digit verification code.";
+
+    auth.classList.add("hidden");
+
+    verify.classList.remove("hidden");
+
+    toast("Verification code generated");
+};
+
+
+/* =========================
+   MASK PHONE
+========================= */
+
+function maskPhone(phone) {
+
+    if (phone.length <= 6) {
+        return phone;
+    }
+
+    return (
+        phone.slice(0, 4) +
+        "••••••" +
+        phone.slice(-3)
+    );
+}
+
+
+/* =========================
+   VERIFY
+========================= */
+
+$("verifyBtn").onclick = () => {
+
+    const code =
+        $("verifyCode").value.trim();
+
+    const correctCode =
+        localStorage.getItem(
+            "ttproVerificationCode"
+        );
+
+    $("verifyMsg").textContent = "";
+
+
+    if (!code) {
+
+        $("verifyMsg").textContent =
+            "Please enter the verification code.";
+
+        return;
+    }
+
+
+    if (code !== correctCode) {
+
+        $("verifyMsg").textContent =
+            "Invalid verification code.";
+
+        return;
+    }
+
+
+    pendingUser =
+        JSON.parse(
+            localStorage.getItem(
+                "ttproPendingUser"
+            )
+        );
+
+
+    if (!pendingUser) {
+
+        $("verifyMsg").textContent =
+            "Registration session expired.";
+
+        return;
+    }
+
+
+    pendingUser.verified = true;
+
+
+    localStorage.setItem(
+        "ttproUser",
+        JSON.stringify(pendingUser)
+    );
+
+
+    localStorage.removeItem(
+        "ttproPendingUser"
+    );
+
+    localStorage.removeItem(
+        "ttproVerificationCode"
+    );
+
+
+    showApp(pendingUser);
+
+    toast("Registration successful");
+};
+
+
+/* =========================
+   RESEND
+========================= */
+
+$("resend").onclick = () => {
+
+    if (!pendingUser) {
+
+        $("verifyMsg").textContent =
+            "Registration session expired.";
+
+        return;
+    }
+
+
+    const code =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        ).toString();
+
+
+    localStorage.setItem(
+        "ttproVerificationCode",
+        code
+    );
+
+
+    $("demoCode").textContent = code;
+
+    $("verifyMsg").textContent =
+        "A new verification code has been generated.";
+
+    toast("New code generated");
+};
+
+
+/* =========================
+   LOGIN
+========================= */
+
+$("loginForm").onsubmit = e => {
+
+    e.preventDefault();
+
+    $("loginError").textContent = "";
+
+
+    const phone =
+        "+63" +
+        $("loginPhone")
+            .value
+            .trim();
+
+
+    const password =
+        $("loginPassword").value;
+
+
+    const user =
+        JSON.parse(
+            localStorage.getItem(
+                "ttproUser"
+            ) || "null"
+        );
+
+
+    if (!user) {
+
+        $("loginError").textContent =
+            "No registered account found.";
+
+        return;
+    }
+
+
+    if (user.phone !== phone) {
+
+        $("loginError").textContent =
+            "Incorrect phone number.";
+
+        return;
+    }
+
+
+    if (user.password !== password) {
+
+        $("loginError").textContent =
+            "Incorrect password.";
+
+        return;
+    }
+
+
+    if (!user.verified) {
+
+        $("loginError").textContent =
+            "Please verify your phone first.";
+
+        return;
+    }
+
+
+    showApp(user);
+
+    toast(
+        "Welcome back, " +
+        user.name
+    );
+};
+
+
+/* =========================
+   SHOW APP
+========================= */
+
+function showApp(user) {
+
+    auth.classList.add("hidden");
+
+    verify.classList.add("hidden");
+
+    app.classList.remove("hidden");
+
+    $("userName").textContent =
+        user.name;
+
+    $("avatar").textContent =
+        (user.name || "A")
+        .charAt(0)
+        .toUpperCase();
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+$("logout").onclick = () => {
+
+    app.classList.add("hidden");
+
+    auth.classList.remove("hidden");
+
+    switchTab("login");
+
+    $("loginPassword").value = "";
+
+    toast("Logged out");
+};
+
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+$("bell").onclick = () => {
+
+    toast(
+        "No new notifications"
+    );
+};
+
+
+/* =========================
+   HISTORY
+========================= */
+
+$("history").onclick = () => {
+
+    toast(
+        "Settlement history opened"
+    );
+};
+
+</script>
+
+</body>
+</html>
+
