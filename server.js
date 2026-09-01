@@ -9,10 +9,14 @@ const db = require("./database");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const sessionSecret = process.env.SESSION_SECRET;
+const sessionSecret =
+    process.env.SESSION_SECRET ||
+    "ttpro-development-session-secret-change-this-in-production";
 
-if (!sessionSecret) {
-    throw new Error("SESSION_SECRET must be configured before starting TTPRO.");
+if (!process.env.SESSION_SECRET) {
+    console.warn(
+        "SESSION_SECRET not configured. Using a fallback development secret; set a real secret in production."
+    );
 }
 
 /* ========================================
