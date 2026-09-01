@@ -1,3994 +1,1161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>TTPRO Admin</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0f1f3a 100%);
-            color: #f4f7fb;
-            min-height: 100vh;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at 20% 30%, rgba(37,99,235,.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 70%, rgba(124,58,237,.08) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        button,
-        input,
-        select {
-            font-family: inherit;
-        }
-
-        button {
-            border: 0;
-            border-radius: 12px;
-            padding: 12px 18px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all .3s ease;
-        }
-
-        button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        /* =====================================
-           LOGIN
-        ===================================== */
-
-        .login-page {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 420px;
-            background: linear-gradient(135deg, rgba(20,30,50,.95) 0%, rgba(15,25,45,.95) 100%);
-            padding: 40px 35px;
-            border-radius: 20px;
-            border: 1px solid rgba(69,162,255,.2);
-            box-shadow: 0 20px 60px rgba(37,99,235,.25), inset 0 1px 0 rgba(255,255,255,.05);
-        }
-
-        .logo {
-            text-align: center;
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #2563eb, #7c5cff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #a5b4c4;
-            margin-bottom: 28px;
-            font-size: 13px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #2563eb;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid rgba(69,162,255,.2);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            background: rgba(20,30,50,.5);
-            color: #f4f7fb;
-            transition: all .3s ease;
-        }
-
-        input::placeholder,
-        select {
-            color: #718397;
-        }
-
-        input:focus,
-        select:focus {
-            outline: none;
-            border-color: #2563eb;
-            background: rgba(20,30,50,.7);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.2);
-        }
-
-        .primary {
-            width: 100%;
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-            color: white;
-            box-shadow: 0 8px 24px rgba(37,99,235,.35);
-        }
-
-        .primary:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-            transform: translateY(-2px);
-        }
-
-        .primary:active {
-            transform: translateY(0);
-        }
-
-        .error {
-            color: #ff8b8b;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        /* =====================================
-           ADMIN
-        ===================================== */
-
-        .admin-page {
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-        }
-
-        header {
-            min-height: 68px;
-            background: linear-gradient(135deg, rgba(10,20,35,.96) 0%, rgba(20,30,45,.96) 100%);
-            border-bottom: 2px solid rgba(69,162,255,.3);
-            box-shadow: 0 4px 20px rgba(37,99,235,.15);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 28px;
-        }
-
-        .header-title {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            background: linear-gradient(135deg, #2563eb, #7c5cff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logout {
-            background: rgba(231,76,60,.12);
-            color: #ff8b8b;
-            border: 1px solid #6b2218;
-        }
-
-        .logout:hover {
-            background: rgba(231,76,60,.25);
-            box-shadow: 0 0 12px rgba(231,76,60,.2);
-        }
-
-        main {
-            padding: 28px;
-            max-width: 1450px;
-            margin: auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* =====================================
-           TABS
-        ===================================== */
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(69,162,255,.1);
-            color: #a5b4c4;
-            border: 1px solid rgba(69,162,255,.2);
-            transition: all .3s ease;
-        }
-
-        .tab-btn:hover {
-            background: rgba(69,162,255,.15);
-            border-color: rgba(69,162,255,.3);
-        }
-
-        .tab-btn.active {
-            background: linear-gradient(135deg, rgba(37,99,235,.2) 0%, rgba(37,99,235,.1) 100%);
-            color: #2563eb;
-            border-color: rgba(69,162,255,.4);
-            box-shadow: 0 0 12px rgba(37,99,235,.2);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* =====================================
-           TOPBAR
-        ===================================== */
-
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            gap: 15px;
-        }
-
-        .topbar h1 {
-            margin: 0 0 5px 0;
-            color: #f4f7fb;
-            font-size: 24px;
-        }
-
-        .refresh {
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-            color: white;
-            box-shadow: 0 4px 16px rgba(37,99,235,.3);
-        }
-
-        .refresh:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
-            transform: translateY(-2px);
-        }
-
-        /* =====================================
-           SUMMARY CARDS
-        ===================================== */
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .summary-card {
-            background: linear-gradient(135deg, rgba(37,99,235,.1) 0%, rgba(37,99,235,.05) 100%);
-            border: 1px solid rgba(69,162,255,.2);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(37,99,235,.1);
-            transition: all .3s ease;
-        }
-
-        .summary-card:hover {
-            border-color: rgba(69,162,255,.4);
-            box-shadow: 0 12px 32px rgba(37,99,235,.2);
-            transform: translateY(-4px);
-        }
-
-        .summary-label {
-            color: #a5b4c4;
-            font-size: 12px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        .summary-value {
-            font-size: 28px;
-            font-weight: 900;
-            color: #f4f7fb;
-        }
-
-        .summary-card.pending {
-            border-left: 4px solid #f59e0b;
-        }
-
-        .summary-card.approved {
-            border-left: 4px solid #22a45d;
-        }
-
-        .summary-card.rejected {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .summary-card.total {
-            border-left: 4px solid #2563eb;
-        }
-
-        /* =====================================
-           TABLE
-        ===================================== */
-
-        .table-wrapper {
-            background: linear-gradient(135deg, rgba(20,30,50,.6) 0%, rgba(15,25,45,.6) 100%);
-            border: 1px solid rgba(69,162,255,.2);
-            border-radius: 16px;
-            overflow-x: auto;
-            box-shadow: 0 12px 32px rgba(37,99,235,.15);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 950px;
-        }
-
-        th,
-        td {
-            padding: 16px;
-            text-align: left;
-            border-bottom: 1px solid rgba(69,162,255,.15);
-            vertical-align: top;
-        }
-
-        th {
-            background: rgba(10,20,35,.5);
-            font-size: 12px;
-            color: #2563eb;
-            white-space: nowrap;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        tbody tr {
-            transition: all .2s ease;
-        }
-
-        tbody tr:hover {
-            background: rgba(37,99,235,.08);
-        }
-
-        td {
-            color: #f4f7fb;
-        }
-
-        /* =====================================
-           STATUS
-        ===================================== */
-
-        .status {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .active {
-            background: rgba(46,204,113,.15);
-            color: #58d68d;
-            border: 1px solid rgba(46,204,113,.3);
-        }
-
-        .frozen {
-            background: rgba(231,76,60,.15);
-            color: #ff8b8b;
-            border: 1px solid rgba(231,76,60,.3);
-        }
-
-        .pending-status {
-            background: rgba(245,158,11,.15);
-            color: #fbbf24;
-            border: 1px solid rgba(245,158,11,.3);
-        }
-
-        .approved-status {
-            background: rgba(46,204,113,.15);
-            color: #58d68d;
-            border: 1px solid rgba(46,204,113,.3);
-        }
-
-        .rejected-status {
-            background: rgba(231,76,60,.15);
-            color: #ff8b8b;
-            border: 1px solid rgba(231,76,60,.3);
-        }
-
-        .verified {
-            color: #58d68d;
-            font-weight: bold;
-        }
-
-        .unverified {
-            color: #ff8b8b;
-        }
-
-        /* =====================================
-           ACTIONS
-        ===================================== */
-
-        .actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .details-btn {
-            background: rgba(69,162,255,.1);
-            color: #2563eb;
-            border: 1px solid rgba(69,162,255,.3);
-        }
-
-        .details-btn:hover {
-            background: rgba(69,162,255,.2);
-            border-color: rgba(69,162,255,.5);
-        }
-
-        .freeze-btn {
-            background: rgba(231,76,60,.15);
-            color: #ff8b8b;
-            border: 1px solid rgba(231,76,60,.3);
-        }
-
-        .freeze-btn:hover {
-            background: rgba(231,76,60,.25);
-            border-color: rgba(231,76,60,.5);
-        }
-
-        .unfreeze-btn {
-            background: rgba(46,204,113,.15);
-            color: #58d68d;
-            border: 1px solid rgba(46,204,113,.3);
-        }
-
-        .unfreeze-btn:hover {
-            background: rgba(46,204,113,.25);
-            border-color: rgba(46,204,113,.5);
-        }
-
-        .approve-btn {
-            background: rgba(46,204,113,.15);
-            color: #58d68d;
-            border: 1px solid rgba(46,204,113,.3);
-        }
-
-        .approve-btn:hover {
-            background: rgba(46,204,113,.25);
-            border-color: rgba(46,204,113,.5);
-        }
-
-        .reject-btn {
-            background: rgba(231,76,60,.15);
-            color: #ff8b8b;
-            border: 1px solid rgba(231,76,60,.3);
-        }
-
-        .reject-btn:hover {
-            background: rgba(231,76,60,.25);
-            border-color: rgba(231,76,60,.5);
-        }
-
-        /* =====================================
-           WITHDRAWAL FILTERS
-        ===================================== */
-
-        .filter-bar {
-            background: linear-gradient(135deg, rgba(37,99,235,.1) 0%, rgba(37,99,235,.05) 100%);
-            border: 1px solid rgba(69,162,255,.2);
-            padding: 16px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(37,99,235,.1);
-            margin-bottom: 20px;
-            display: grid;
-            grid-template-columns: minmax(200px, 1fr) 200px auto;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .filter-bar input,
-        .filter-bar select {
-            margin: 0;
-        }
-
-        .search-input {
-            min-width: 0;
-        }
-
-        .amount {
-            font-weight: bold;
-            color: #f4f7fb;
-            white-space: nowrap;
-        }
-
-        .gcash {
-            line-height: 1.5;
-        }
-
-        .gcash-name {
-            font-weight: 600;
-            color: #f4f7fb;
-        }
-
-        .gcash-number {
-            color: #a5b4c4;
-            font-size: 12px;
-        }
-
-        /* =====================================
-           MUTED / EMPTY
-        ===================================== */
-
-        .muted {
-            color: #a5b4c4;
-            font-size: 12px;
-        }
-
-        .empty {
-            padding: 35px !important;
-            text-align: center !important;
-            color: #a5b4c4;
-        }
-
-        .loading {
-            padding: 25px !important;
-            text-align: center !important;
-            color: #a5b4c4;
-        }
-
-        /* =====================================
-           MODAL
-        ===================================== */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.7);
-            backdrop-filter: blur(6px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            z-index: 100;
-        }
-
-        .modal-card {
-            width: 100%;
-            max-width: 850px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: linear-gradient(135deg, rgba(20,30,50,.98) 0%, rgba(15,25,45,.98) 100%);
-            border: 1px solid rgba(69,162,255,.2);
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 20px 60px rgba(37,99,235,.3);
-        }
-
-        .withdrawal-modal-card {
-            max-width: 700px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            gap: 15px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-            color: #f4f7fb;
-            font-size: 20px;
-        }
-
-        .close {
-            background: rgba(69,162,255,.1);
-            color: #2563eb;
-            font-size: 18px;
-            border: 1px solid rgba(69,162,255,.2);
-        }
-
-        .close:hover {
-            background: rgba(69,162,255,.2);
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .detail-box {
-            background: rgba(37,99,235,.08);
-            border: 1px solid rgba(69,162,255,.2);
-            padding: 16px;
-            border-radius: 12px;
-        }
-
-        .detail-label {
-            color: #a5b4c4;
-            font-size: 11px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        .detail-value {
-            font-weight: 600;
-            color: #f4f7fb;
-            word-break: break-word;
-        }
-
-        .history {
-            overflow-x: auto;
-        }
-
-        .history table {
-            min-width: 650px;
-        }
-
-        .success {
-            color: #58d68d;
-            font-weight: bold;
-        }
-
-        .failed {
-            color: #ff8b8b;
-            font-weight: bold;
-        }
-
-        /* =====================================
-           WITHDRAWAL MODAL
-        ===================================== */
-
-        .withdrawal-info {
-            display: grid;
-            grid-template-columns:
-                repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .withdrawal-info-box {
-            background: #f9fafb;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .withdrawal-info-label {
-            color: #6b7280;
-            font-size: 12px;
-            margin-bottom: 6px;
-        }
-
-        .withdrawal-info-value {
-            font-weight: 600;
-            word-break: break-word;
-        }
-
-        .withdrawal-amount {
-            font-size: 28px;
-            color: #111827;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        /* =====================================
-           TOAST
-        ===================================== */
-
-        .toast {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            z-index: 300;
-            min-width: 260px;
-            max-width: 400px;
-            padding: 14px 17px;
-            border-radius: 10px;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,.2);
-            font-weight: 600;
-        }
-
-        .toast.success-toast {
-            background: #16a34a;
-        }
-
-        .toast.error-toast {
-            background: #dc2626;
-        }
-
-        /* =====================================
-           RESPONSIVE
-        ===================================== */
-
-        @media (max-width: 900px) {
-
-            .summary-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-            .filter-bar {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .filter-bar button {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 600px) {
-
-            main {
-                padding: 15px;
-            }
-
-            header {
-                padding: 0 15px;
-            }
-
-            .header-title {
-                font-size: 17px;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-bar {
-                grid-template-columns: 1fr;
-            }
-
-            .details-grid,
-            .withdrawal-info {
-                grid-template-columns: 1fr;
-            }
-
-            .topbar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .topbar .refresh {
-                width: 100%;
-            }
-
-            .modal {
-                padding: 10px;
-            }
-
-            .modal-card {
-                padding: 18px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TTPRO — Admin Panel</title>
+<style>
+:root{
+  --bg:#0a1628;
+  --bg2:#1a2a4a;
+  --panel:#15233d;
+  --panel2:#0f1f3a;
+  --border:#2563eb;
+  --border2:#3b82f6;
+  --gold:#2563eb;
+  --gold2:#60a5fa;
+  --gold3:#1e40af;
+  --gold-glow:rgba(37,99,235,0.18);
+  --red:#c0392b;
+  --red2:#e74c3c;
+  --red3:#ff6b6b;
+  --green:#10b981;
+  --green2:#34d399;
+  --green3:#6ee7b7;
+  --text:#f4f7fb;
+  --muted:#a5b4c4;
+  --muted2:#718397;
+  --radius:12px;
+  --shadow:0 24px 80px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0f1f3a 100%);color:var(--text);min-height:100vh;font-size:14px}
+button,input,select,textarea{font:inherit;outline:none}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(37,99,235,.75);outline-offset:2px}
+.hidden{display:none!important}
+
+/* Modern blue admin theme */
+:root{--bg:#0a1628;--bg2:#15233d;--panel:#1a2a4a;--panel2:#0f1f3a;--border:#2563eb;--border2:#3b82f6;--gold:#2563eb;--gold2:#60a5fa;--gold3:#1e40af;--red:#c0392b;--red2:#e74c3c;--red3:#ff6b6b;--green:#10b981;--green2:#34d399;--green3:#6ee7b7;--text:#f4f7fb;--muted:#a5b4c4;--muted2:#718397}
+body{background:linear-gradient(135deg, rgba(10,20,35,.96) 0%, rgba(20,30,45,.96) 100%)}
+.topbar{background:rgba(10,20,35,.96);border-color:var(--border2)}
+.nav-tabs{background:rgba(20,30,50,.96);border-color:var(--border)}
+.stat-card,.card,.modal-box,.login-card{background:linear-gradient(135deg,rgba(20,30,50,.95) 0%, rgba(15,25,45,.95) 100%);border-color:var(--border)}
+.table th{background:rgba(10,20,35,.5);color:var(--gold2)}
+.group input,.cash-form textarea,#notifUser,#notifMsg,#taskDesc{background:rgba(20,30,50,.5)!important;border-color:var(--border)!important}
+.btn-gold{background:linear-gradient(135deg,#2563eb 0%, #3b82f6 100%);color:#fff}
+.modal-overlay{background:rgba(10,20,35,.82)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:9px}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--panel2);border:1px solid var(--gold3);color:var(--gold2);
+  padding:11px 22px;border-radius:50px;font-size:13px;font-weight:700;
+  opacity:0;pointer-events:none;transition:.25s;z-index:999;white-space:nowrap;
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green2);color:var(--green3)}
+#toast.err{border-color:var(--red2);color:var(--red3)}
+
+/* ═══════════ LOGIN ═══════════ */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 0%, #1a0f2e 0%, #08060a 60%);
+  padding:20px;
+}
+.login-card{
+  width:100%;max-width:400px;
+  background:var(--panel);
+  border:1px solid var(--border2);
+  border-radius:20px;padding:36px;
+  box-shadow:var(--shadow);
+  animation:fadeUp .35s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.login-logo{
+  text-align:center;margin-bottom:6px;
+}
+.login-logo .logo-text{
+  font-size:42px;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(135deg,#ffd96a,#c8960a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;
+}
+.login-logo .logo-sub{
+  font-size:11px;letter-spacing:5px;color:var(--muted);text-transform:uppercase;margin-top:2px;
+}
+.login-divider{
+  height:1px;background:linear-gradient(90deg,transparent,var(--gold3),transparent);
+  margin:20px 0;
+}
+.login-title{text-align:center;font-size:15px;color:var(--muted);margin-bottom:22px;letter-spacing:1px}
+
+.group{margin-bottom:15px}
+.group label{display:block;font-size:11px;font-weight:700;color:var(--gold3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.group input{
+  width:100%;padding:13px 14px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--bg2);
+  color:var(--text);transition:border .2s;
+}
+.group input:focus{border-color:var(--gold3);box-shadow:0 0 0 3px rgba(184,134,11,.12)}
+.form-err{color:var(--red3);font-size:12px;min-height:16px;margin:8px 0 2px;text-align:center}
+
+.btn-gold{
+  width:100%;padding:14px;border:none;border-radius:11px;
+  background:linear-gradient(135deg,#c8960a,#f0c040);
+  color:#0e0b12;font-weight:900;font-size:15px;letter-spacing:.5px;
+  transition:.2s;box-shadow:0 6px 24px rgba(184,134,11,.35);margin-top:4px;
+}
+.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold:active{transform:translateY(0)}
+
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ═══════════ ADMIN SHELL ═══════════ */
+#adminShell{display:flex;flex-direction:column;min-height:100vh}
+
+.topbar{
+  height:62px;background:rgba(8,6,10,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;padding:0 22px;gap:14px;
+  position:sticky;top:0;z-index:20;
+}
+.topbar-logo{
+  font-size:22px;font-weight:900;letter-spacing:2px;flex:1;
+  background:linear-gradient(135deg,#ffd96a,#c8960a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.topbar-badge{
+  background:rgba(240,192,64,.12);border:1px solid var(--gold3);
+  color:var(--gold2);font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:999px;letter-spacing:.5px;
+}
+.topbar-logout{
+  background:rgba(192,57,43,.15);border:1px solid #6b2218;
+  color:var(--red3);font-size:12px;font-weight:700;
+  padding:8px 14px;border-radius:9px;transition:.2s;
+}
+.topbar-logout:hover{background:rgba(192,57,43,.28)}
+
+/* ── Tabs ── */
+.nav-tabs{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;padding:0 22px;gap:2px;overflow-x:auto;
+}
+.nav-tab{
+  background:none;border:none;color:var(--muted);font-size:13px;font-weight:700;
+  padding:14px 18px;letter-spacing:.3px;position:relative;white-space:nowrap;transition:.2s;
+}
+.nav-tab.active{color:var(--gold2)}
+.nav-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold3),var(--gold2))}
+.nav-tab:hover:not(.active){color:var(--text)}
+
+/* ── Page Content ── */
+.page{padding:22px;max-width:1300px;margin:0 auto;width:100%}
+.page-title{font-size:22px;font-weight:900;color:var(--gold2);margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+
+/* ── Stat Cards ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:18px;
+  transition:.2s;
+}
+.stat-card:hover{border-color:var(--gold3);box-shadow:0 0 20px var(--gold-glow)}
+.stat-card .s-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.stat-card .s-val{font-size:30px;font-weight:900;margin-top:8px}
+.s-val.gold{color:var(--gold2)}
+.s-val.green{color:var(--green3)}
+.s-val.red{color:var(--red3)}
+.s-val.blue{color:#7eb8ff}
+
+/* ── Card / Table ── */
+.card{
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--radius);
+}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+}
+.card-head h2{font-size:15px;font-weight:800;color:var(--gold2)}
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:9px;padding:8px 12px;
+}
+.search-box input{background:none;border:none;color:var(--text);width:180px;font-size:13px}
+.search-box input::placeholder{color:var(--muted)}
+
+.table-wrap{overflow-x:auto}
+.table{width:100%;border-collapse:collapse;min-width:780px}
+.table th{
+  padding:11px 12px;text-align:left;
+  font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.8px;
+  border-bottom:1px solid var(--border2);background:var(--bg2);
+}
+.table td{padding:12px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tbody tr:hover td{background:rgba(240,192,64,.03)}
+
+/* ── Pill badges ── */
+.pill{display:inline-flex;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.pill.active{background:rgba(39,174,96,.15);color:var(--green3)}
+.pill.frozen{background:rgba(192,57,43,.15);color:var(--red3)}
+.pill.verified{background:rgba(126,184,255,.12);color:#7eb8ff}
+.pill.no{background:rgba(100,100,120,.12);color:var(--muted)}
+.pill.pending{background:rgba(240,192,64,.12);color:var(--gold2)}
+.pill.approved,.pill.completed{background:rgba(39,174,96,.15);color:var(--green3)}
+.pill.rejected{background:rgba(192,57,43,.15);color:var(--red3)}
+
+/* ── Action buttons ── */
+.act-btn{
+  border:none;border-radius:7px;padding:6px 11px;font-size:12px;font-weight:700;transition:.15s;
+}
+.act-details{background:rgba(240,192,64,.12);color:var(--gold2)}
+.act-details:hover{background:rgba(240,192,64,.22)}
+.act-freeze{background:rgba(192,57,43,.15);color:var(--red3)}
+.act-freeze:hover{background:rgba(192,57,43,.28)}
+.act-unfreeze{background:rgba(39,174,96,.15);color:var(--green3)}
+.act-unfreeze:hover{background:rgba(39,174,96,.25)}
+.act-cash{background:rgba(240,192,64,.18);color:var(--gold);border:1px solid var(--gold3)}
+.act-cash:hover{background:rgba(240,192,64,.32)}
+
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── Modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
+  display:grid;place-items:center;padding:20px;z-index:50;
+}
+.modal-box{
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:18px;width:100%;max-width:520px;
+  box-shadow:var(--shadow);animation:fadeUp .25s ease;
+  max-height:88vh;overflow:auto;
+}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--panel);
+}
+.modal-head h3{font-size:17px;font-weight:900;color:var(--gold2)}
+.modal-close{
+  background:var(--bg2);border:1px solid var(--border2);color:var(--muted);
+  width:32px;height:32px;border-radius:8px;font-size:16px;
+}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:20px 22px}
+
+/* Cash form */
+.cash-form{display:flex;flex-direction:column;gap:14px}
+.cash-form .group{margin:0}
+.cash-form .amount-row{position:relative}
+.cash-form .peso{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  color:var(--gold2);font-weight:700;pointer-events:none;
+}
+.cash-form input[type=number]{padding-left:28px!important}
+.cash-form textarea{
+  width:100%;padding:11px 13px;border-radius:10px;
+  border:1px solid var(--border2);background:var(--bg2);
+  color:var(--text);resize:vertical;min-height:70px;
+}
+.cash-form textarea:focus{border-color:var(--gold3)}
+
+/* User detail rows */
+.detail-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.detail-row:last-child{border-bottom:none}
+.d-label{font-size:12px;color:var(--muted);font-weight:600}
+.d-val{font-size:13px;font-weight:700;text-align:right}
+
+/* Login history sub-table */
+.sub-table{width:100%;border-collapse:collapse;margin-top:6px}
+.sub-table th,.sub-table td{padding:9px 8px;text-align:left;font-size:12px;border-bottom:1px solid var(--border)}
+.sub-table th{color:var(--muted);font-weight:700}
+.sub-table tr:last-child td{border-bottom:none}
+
+/* Withdrawal list in modal */
+.wd-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.wd-row:last-child{border-bottom:none}
+
+/* Empty state */
+.empty{padding:36px 20px;text-align:center;color:var(--muted);font-size:13px}
+.empty-icon{font-size:32px;margin-bottom:8px;opacity:.4}
+
+/* Responsive */
+@media(max-width:900px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .page{padding:14px}
+  .nav-tabs{padding:0 10px}
+}
+@media(max-width:500px){
+  .stats-row{grid-template-columns:1fr}
+  .topbar{padding:0 14px}
+}
+</style>
 </head>
-
 <body>
 
-<!-- =====================================
-     ADMIN LOGIN
-===================================== -->
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-text">TTPRO</span>
+      <span class="logo-sub">Admin Control Panel</span>
+    </div>
+    <div class="login-divider"></div>
+    <div class="login-title">ADMINISTRATOR ACCESS</div>
 
-<section
-    id="loginPage"
-    class="login-page"
->
+    <form id="loginForm">
+      <div class="group">
+        <label>Username</label>
+        <input id="adminUser" type="text" placeholder="Enter admin username" autocomplete="username" required>
+      </div>
+      <div class="group">
+        <label>Password</label>
+        <input id="adminPass" type="password" placeholder="Enter admin password" autocomplete="current-password" required>
+      </div>
+      <div id="loginErr" class="form-err"></div>
+      <button class="btn-gold" type="submit" id="loginBtn">Login to Admin Panel</button>
+    </form>
+  </div>
+</div>
 
-    <div class="login-card">
+<!-- ═══ ADMIN SHELL ═══ -->
+<div id="adminShell" class="hidden">
+  <header class="topbar">
+    <div class="topbar-logo">TTPRO</div>
+    <span class="topbar-badge">⚙ ADMIN</span>
+    <button class="topbar-logout" id="logoutBtn">Logout</button>
+  </header>
 
-        <div class="logo">
-            TTPRO
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="users">👥 Users</button>
+    <button class="nav-tab" data-tab="withdrawals">💸 Withdrawals</button>
+    <button class="nav-tab" data-tab="tasks">💼 Tasks</button>
+    <button class="nav-tab" data-tab="notifications">🔔 Notifications</button>
+  </nav>
+
+  <!-- ══ USERS TAB ══ -->
+  <div id="tab-users" class="page">
+    <div class="page-title">User Management</div>
+    <div class="page-sub">View, manage and top-up user accounts</div>
+
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="s-label">Total Users</div><div class="s-val gold" id="sTotal">—</div></div>
+      <div class="stat-card"><div class="s-label">Verified</div><div class="s-val green" id="sVerified">—</div></div>
+      <div class="stat-card"><div class="s-label">Frozen</div><div class="s-val red" id="sFrozen">—</div></div>
+      <div class="stat-card"><div class="s-label">Total Balance</div><div class="s-val blue" id="sTotalBal">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>All Accounts</h2>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="search-box">
+            <span style="color:var(--muted)">🔍</span>
+            <input id="searchInput" type="text" placeholder="Search name or phone...">
+          </div>
+          <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadUsers()">↻ Refresh</button>
         </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Balance</th>
+              <th>Verified</th>
+              <th>Status</th>
+              <th>Last Login</th>
+              <th>Last IP</th>
+              <th>Device</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-        <div class="subtitle">
-            Administrator Panel
-        </div>
+  <!-- ══ WITHDRAWALS TAB ══ -->
+  <div id="tab-withdrawals" class="page hidden">
+    <div class="page-title">Withdrawal Requests</div>
+    <div class="page-sub">Review and process user withdrawal requests</div>
 
-        <div
-            id="loginError"
-            class="error hidden"
-        ></div>
+    <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card"><div class="s-label">Total Requests</div><div class="s-val gold" id="wdTotal">—</div></div>
+      <div class="stat-card"><div class="s-label">Pending</div><div class="s-val" style="color:var(--gold2)" id="wdPending">—</div></div>
+      <div class="stat-card"><div class="s-label">Total Amount</div><div class="s-val green" id="wdAmount">—</div></div>
+    </div>
 
-        <form id="adminLoginForm">
+    <div class="card">
+      <div class="card-head">
+        <h2>All Withdrawals</h2>
+        <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadWithdrawals()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Bank</th>
+              <th>Account</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="wdBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
-            <label for="username">
-                Username
-            </label>
+  <!-- ══ NOTIFICATIONS TAB ══ -->
+  <div id="tab-notifications" class="page hidden">
+    <div class="page-title">Send Notifications</div>
+    <div class="page-sub">Broadcast messages to users</div>
 
-            <input
-                id="username"
-                type="text"
-                placeholder="Admin Username"
-                autocomplete="username"
-                required
-            >
-
-            <label for="password">
-                Password
-            </label>
-
-            <input
-                id="password"
-                type="password"
-                placeholder="Admin password"
-                autocomplete="current-password"
-                required
-            >
-
-            <button
-                class="primary"
-                type="submit"
-            >
-                Login
-            </button>
-
+    <div class="card" style="max-width:540px">
+      <div class="card-head"><h2>Send Notification</h2></div>
+      <div style="padding:20px">
+        <form id="notifForm">
+          <div class="group">
+            <label>Target User</label>
+            <select id="notifUser" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--text)">
+              <option value="all">📢 All Users</option>
+            </select>
+          </div>
+          <div class="group">
+            <label>Title</label>
+            <input id="notifTitle" type="text" placeholder="Notification title" required>
+          </div>
+          <div class="group">
+            <label>Message</label>
+            <textarea id="notifMsg" style="width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);resize:vertical;min-height:90px;font:inherit" placeholder="Enter your message here..." required></textarea>
+          </div>
+          <div id="notifErr" class="form-err"></div>
+          <button class="btn-gold" type="submit">Send Notification</button>
         </form>
+      </div>
+    </div>
+  </div>
 
+  <!-- ══ TASKS TAB ══ -->
+  <div id="tab-tasks" class="page hidden">
+    <div class="page-title">Earn Tasks</div>
+    <div class="page-sub">Create tasks, review user submissions and credit rewards</div>
+
+    <div class="card" style="max-width:540px">
+      <div class="card-head"><h2>➕ Create Task</h2></div>
+      <div style="padding:20px">
+        <form id="taskForm">
+          <div class="group">
+            <label>Task Title</label>
+            <input id="taskTitle" type="text" placeholder="e.g. Like our Facebook page" required>
+          </div>
+          <div class="group">
+            <label>Description</label>
+            <textarea id="taskDesc" style="width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);resize:vertical;min-height:70px;font:inherit" placeholder="What the user needs to do..."></textarea>
+          </div>
+          <div class="group">
+            <label>Reward (₱)</label>
+            <input id="taskReward" type="number" min="1" step="0.01" placeholder="5.00" required>
+          </div>
+          <div id="taskErr" class="form-err"></div>
+          <button class="btn-gold" type="submit">Create Task</button>
+        </form>
+      </div>
     </div>
 
-</section>
-
-
-<!-- =====================================
-     ADMIN DASHBOARD
-===================================== -->
-
-<section
-    id="adminPage"
-    class="admin-page hidden"
->
-
-    <header>
-
-        <div class="header-title">
-            TTPRO Admin
-        </div>
-
-        <button
-            id="logoutBtn"
-            class="logout"
-        >
-            Logout
-        </button>
-
-    </header>
-
-
-    <main>
-
-        <!-- =================================
-             TABS
-        ================================== -->
-
-        <div class="tabs">
-
-            <button
-                class="tab-btn active"
-                data-tab="usersTab"
-            >
-                Users
-            </button>
-
-            <button
-                class="tab-btn"
-                data-tab="withdrawalsTab"
-            >
-                Withdrawals
-                <span
-                    id="pendingBadge"
-                    class="status pending-status hidden"
-                    style="margin-left:5px;"
-                >
-                    0
-                </span>
-            </button>
-
-        </div>
-
-
-        <!-- =================================
-             USERS TAB
-        ================================== -->
-
-        <section
-            id="usersTab"
-            class="tab-content active"
-        >
-
-            <div class="topbar">
-
-                <div>
-
-                    <h1>
-                        Users
-                    </h1>
-
-                    <div
-                        id="userCount"
-                        class="muted"
-                    >
-                        Loading...
-                    </div>
-
-                </div>
-
-                <button
-                    id="refreshUsersBtn"
-                    class="refresh"
-                >
-                    Refresh
-                </button>
-
-            </div>
-
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>User</th>
-                            <th>Phone</th>
-                            <th>Balance</th>
-                            <th>Status</th>
-                            <th>Verified</th>
-                            <th>Last IP</th>
-                            <th>Device</th>
-                            <th>Last Login</th>
-                            <th>Actions</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="usersTable">
-
-                        <tr>
-                            <td
-                                colspan="10"
-                                class="loading"
-                            >
-                                Loading users...
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================
-             WITHDRAWALS TAB
-        ================================== -->
-
-        <section
-            id="withdrawalsTab"
-            class="tab-content"
-        >
-
-            <div class="topbar">
-
-                <div>
-
-                    <h1>
-                        Withdrawals
-                    </h1>
-
-                    <div
-                        id="withdrawalCountText"
-                        class="muted"
-                    >
-                        Loading...
-                    </div>
-
-                </div>
-
-                <button
-                    id="refreshWithdrawalsBtn"
-                    class="refresh"
-                >
-                    Refresh
-                </button>
-
-            </div>
-
-
-            <!-- SUMMARY -->
-
-            <div class="summary-grid">
-
-                <div class="summary-card total">
-
-                    <div class="summary-label">
-                        Total Requests
-                    </div>
-
-                    <div
-                        id="summaryTotal"
-                        class="summary-value"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card pending">
-
-                    <div class="summary-label">
-                        Pending
-                    </div>
-
-                    <div
-                        id="summaryPending"
-                        class="summary-value"
-                    >
-                        0
-                    </div>
-
-                    <div
-                        id="summaryPendingAmount"
-                        class="muted"
-                    >
-                        ₱0.00
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card approved">
-
-                    <div class="summary-label">
-                        Approved
-                    </div>
-
-                    <div
-                        id="summaryApproved"
-                        class="summary-value"
-                    >
-                        0
-                    </div>
-
-                    <div
-                        id="summaryApprovedAmount"
-                        class="muted"
-                    >
-                        ₱0.00
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card rejected">
-
-                    <div class="summary-label">
-                        Rejected
-                    </div>
-
-                    <div
-                        id="summaryRejected"
-                        class="summary-value"
-                    >
-                        0
-                    </div>
-
-                    <div
-                        id="summaryRejectedAmount"
-                        class="muted"
-                    >
-                        ₱0.00
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- FILTER -->
-
-            <div class="filter-bar">
-
-                <input
-                    id="withdrawalSearch"
-                    class="search-input"
-                    type="text"
-                    placeholder="Search name, phone, GCash..."
-                >
-
-                <select
-                    id="withdrawalStatus"
-                >
-                    <option value="all">
-                        All Status
-                    </option>
-
-                    <option value="pending">
-                        Pending
-                    </option>
-
-                    <option value="approved">
-                        Approved
-                    </option>
-
-                    <option value="rejected">
-                        Rejected
-                    </option>
-                </select>
-
-                <button
-                    id="clearFiltersBtn"
-                    class="details-btn"
-                >
-                    Clear
-                </button>
-
-            </div>
-
-
-            <!-- WITHDRAWAL TABLE -->
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>User</th>
-                            <th>Phone</th>
-                            <th>Amount</th>
-                            <th>GCash</th>
-                            <th>Method</th>
-                            <th>Status</th>
-                            <th>Requested</th>
-                            <th>Processed</th>
-                            <th>Actions</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody
-                        id="withdrawalsTable"
-                    >
-
-                        <tr>
-                            <td
-                                colspan="10"
-                                class="loading"
-                            >
-                                Loading withdrawals...
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</section>
-
-
-<!-- =====================================
-     USER DETAILS MODAL
-===================================== -->
-
-<div
-    id="detailsModal"
-    class="modal hidden"
->
-
-    <div class="modal-card">
-
-        <div class="modal-header">
-
-            <h2>
-                User Details
-            </h2>
-
-            <button
-                id="closeModal"
-                class="close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div id="userDetails">
-            Loading...
-        </div>
-
+    <div class="card">
+      <div class="card-head">
+        <h2>All Tasks</h2>
+        <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadAdminTasks()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Reward</th>
+              <th>Submissions</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="taskBody"></tbody>
+        </table>
+      </div>
     </div>
 
+    <div class="card">
+      <div class="card-head">
+        <h2>User Submissions</h2>
+        <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadAdminCompletions()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Task</th>
+              <th>Proof</th>
+              <th>Reward</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="taskCompBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
-
-<!-- =====================================
-     WITHDRAWAL DETAILS MODAL
-===================================== -->
-
-<div
-    id="withdrawalModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-card withdrawal-modal-card"
-    >
-
-        <div class="modal-header">
-
-            <h2>
-                Withdrawal Details
-            </h2>
-
-            <button
-                id="closeWithdrawalModal"
-                class="close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div id="withdrawalDetails">
-            Loading...
-        </div>
-
+<!-- ══ USER DETAIL MODAL ══ -->
+<div id="detailModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="detailName">User Details</h3>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
     </div>
-
+    <div class="modal-body" id="detailBody"></div>
+  </div>
 </div>
 
+<!-- ══ ADD CASH MODAL ══ -->
+<div id="cashModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>💰 Add Cash</h3>
+      <button class="modal-close" onclick="closeModal('cashModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="cashUserInfo" style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:18px">
+        <div style="font-size:13px;color:var(--muted)">Adding cash to:</div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold2);margin-top:4px" id="cashUserName">—</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px" id="cashUserPhone">—</div>
+        <div style="margin-top:8px;font-size:13px">Current Balance: <strong style="color:var(--green3)" id="cashCurBal">—</strong></div>
+      </div>
 
-<!-- =====================================
-     TOAST
-===================================== -->
+      <form class="cash-form" id="cashForm">
+        <div class="group">
+          <label>Amount to Add</label>
+          <div class="amount-row">
+            <span class="peso">₱</span>
+            <input id="cashAmount" type="number" min="1" step="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="group">
+          <label>Note / Reason <span style="color:var(--muted2);font-size:10px">(optional)</span></label>
+          <textarea id="cashNote" placeholder="e.g. Bonus, Commission, Top-up..."></textarea>
+        </div>
+        <div id="cashErr" class="form-err"></div>
+        <button class="btn-gold" type="submit" id="cashBtn">Add Cash to Account</button>
+      </form>
+    </div>
+  </div>
+</div>
 
-<div
-    id="toast"
-    class="toast hidden"
-></div>
+<!-- ══ CONFIRM MODAL ══ -->
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-head">
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmText" style="color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:20px"></p>
+      <div style="display:flex;gap:10px">
+        <button onclick="closeModal('confirmModal')" style="flex:1;padding:13px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-weight:700">Cancel</button>
+        <button id="confirmOkBtn" style="flex:1;padding:13px;border-radius:10px;background:var(--red2);border:none;color:#fff;font-weight:700">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<div id="toast"></div>
 
 <script>
+/* ═══════════ UTILS ═══════════ */
+const $ = id => document.getElementById(id);
+let allUsers = [];
+let cashTargetUser = null;
+let confirmCallback = null;
 
-/* =====================================
-   ELEMENTS
-===================================== */
-
-const loginPage =
-    document.getElementById(
-        "loginPage"
-    );
-
-const adminPage =
-    document.getElementById(
-        "adminPage"
-    );
-
-const loginForm =
-    document.getElementById(
-        "adminLoginForm"
-    );
-
-const loginError =
-    document.getElementById(
-        "loginError"
-    );
-
-const usersTable =
-    document.getElementById(
-        "usersTable"
-    );
-
-const userCount =
-    document.getElementById(
-        "userCount"
-    );
-
-const detailsModal =
-    document.getElementById(
-        "detailsModal"
-    );
-
-const userDetails =
-    document.getElementById(
-        "userDetails"
-    );
-
-const withdrawalsTable =
-    document.getElementById(
-        "withdrawalsTable"
-    );
-
-const withdrawalSearch =
-    document.getElementById(
-        "withdrawalSearch"
-    );
-
-const withdrawalStatus =
-    document.getElementById(
-        "withdrawalStatus"
-    );
-
-const withdrawalModal =
-    document.getElementById(
-        "withdrawalModal"
-    );
-
-const withdrawalDetails =
-    document.getElementById(
-        "withdrawalDetails"
-    );
-
-const toast =
-    document.getElementById(
-        "toast"
-    );
-
-
-/* =====================================
-   STATE
-===================================== */
-
-let withdrawalTimer = null;
-
-let toastTimer = null;
-
-
-/* =====================================
-   API HELPER
-===================================== */
-
-async function api(
-    url,
-    options = {}
-) {
-
-    const response =
-        await fetch(
-            url,
-            {
-                credentials:
-                    "same-origin",
-
-                ...options,
-
-                headers: {
-                    "Content-Type":
-                        "application/json",
-
-                    ...(options.headers || {})
-                }
-            }
-        );
-
-
-    let data = {};
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch {
-
-        data = {};
-
-    }
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            data.message ||
-            "Request failed."
-        );
-
-    }
-
-
-    return data;
-
+function toast(msg, type='') {
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.className = '', 2800);
 }
 
-
-/* =====================================
-   TOAST
-===================================== */
-
-function showToast(
-    message,
-    type = "success"
-) {
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.className =
-        "toast";
-
-
-    if (type === "error") {
-
-        toast.classList.add(
-            "error-toast"
-        );
-
-    } else {
-
-        toast.classList.add(
-            "success-toast"
-        );
-
-    }
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.add(
-                    "hidden"
-                );
-
-            },
-            3000
-        );
-
+async function api(url, opts={}) {
+  const r = await fetch(url, {
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json', ...(opts.headers||{}) },
+    ...opts
+  });
+  let d = {};
+  try { d = await r.json(); } catch {}
+  if (!r.ok) throw new Error(d.message || 'Request failed');
+  return d;
 }
 
-
-/* =====================================
-   ADMIN LOGIN
-===================================== */
-
-loginForm.addEventListener(
-    "submit",
-    async event => {
-
-        event.preventDefault();
-
-
-        loginError.classList.add(
-            "hidden"
-        );
-
-
-        const username =
-            document
-                .getElementById(
-                    "username"
-                )
-                .value
-                .trim();
-
-
-        const password =
-            document
-                .getElementById(
-                    "password"
-                )
-                .value;
-
-
-        try {
-
-            await api(
-                "/api/admin/login",
-                {
-                    method:
-                        "POST",
-
-                    body:
-                        JSON.stringify({
-                            username,
-                            password
-                        })
-                }
-            );
-
-
-            showAdmin();
-
-
-        } catch (error) {
-
-            loginError.textContent =
-                error.message;
-
-
-            loginError.classList.remove(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================
-   SHOW ADMIN
-===================================== */
-
-function showAdmin() {
-
-    loginPage.classList.add(
-        "hidden"
-    );
-
-    adminPage.classList.remove(
-        "hidden"
-    );
-
-
-    loadUsers();
-
-    loadWithdrawals();
-
-    startWithdrawalAutoRefresh();
-
+function money(v) {
+  return '₱' + Number(v||0).toLocaleString('en-PH', { minimumFractionDigits:2, maximumFractionDigits:2 });
 }
 
-
-/* =====================================
-   HIDE ADMIN
-===================================== */
-
-function hideAdmin() {
-
-    adminPage.classList.add(
-        "hidden"
-    );
-
-    loginPage.classList.remove(
-        "hidden"
-    );
-
-
-    stopWithdrawalAutoRefresh();
-
-
-    document
-        .getElementById("password")
-        .value = "";
-
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return isNaN(d) ? s : d.toLocaleString('en-PH', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true });
 }
 
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
 
-/* =====================================
-   TABS
-===================================== */
+function closeModal(id) { $(id).classList.add('hidden'); }
 
-document
-    .querySelectorAll(".tab-btn")
-    .forEach(button => {
+function confirm(title, text, cb) {
+  $('confirmTitle').textContent = title;
+  $('confirmText').textContent = text;
+  confirmCallback = cb;
+  $('confirmModal').classList.remove('hidden');
+}
 
-        button.addEventListener(
-            "click",
-            () => {
+$('confirmOkBtn').onclick = () => {
+  closeModal('confirmModal');
+  if (confirmCallback) confirmCallback();
+};
 
-                const tabId =
-                    button.dataset.tab;
+['detailModal','cashModal','confirmModal'].forEach(id => {
+  $(id).addEventListener('click', e => { if (e.target === $(id)) closeModal(id); });
+});
 
-
-                document
-                    .querySelectorAll(
-                        ".tab-btn"
-                    )
-                    .forEach(btn => {
-
-                        btn.classList.remove(
-                            "active"
-                        );
-
-                    });
-
-
-                document
-                    .querySelectorAll(
-                        ".tab-content"
-                    )
-                    .forEach(tab => {
-
-                        tab.classList.remove(
-                            "active"
-                        );
-
-                    });
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                document
-                    .getElementById(
-                        tabId
-                    )
-                    .classList.add(
-                        "active"
-                    );
-
-
-                if (
-                    tabId ===
-                    "withdrawalsTab"
-                ) {
-
-                    loadWithdrawals();
-
-                }
-
-            }
-        );
-
+/* ═══════════ LOGIN ═══════════ */
+$('loginForm').onsubmit = async e => {
+  e.preventDefault();
+  $('loginErr').textContent = '';
+  const btn = $('loginBtn');
+  btn.textContent = 'Logging in...'; btn.disabled = true;
+  try {
+    await api('/api/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ username: $('adminUser').value.trim(), password: $('adminPass').value })
     });
+    $('loginScreen').classList.add('hidden');
+    $('adminShell').classList.remove('hidden');
+    await loadUsers();
+    await populateNotifUsers();
+  } catch(err) {
+    $('loginErr').textContent = err.message;
+    btn.textContent = 'Login to Admin Panel'; btn.disabled = false;
+  }
+};
 
+/* ═══════════ LOGOUT ═══════════ */
+$('logoutBtn').onclick = () => {
+  confirm('Logout', 'Are you sure you want to logout from the admin panel?', async () => {
+    try { await api('/api/admin/logout', { method:'POST' }); } catch {}
+    $('adminShell').classList.add('hidden');
+    $('loginScreen').classList.remove('hidden');
+    $('adminUser').value = '';
+    $('adminPass').value = '';
+  });
+};
 
-/* =====================================
-   LOAD USERS
-===================================== */
+/* ═══════════ TABS ═══════════ */
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    ['users','withdrawals','tasks','notifications'].forEach(t => {
+      $(`tab-${t}`).classList.toggle('hidden', t !== tab);
+    });
+    if (tab === 'withdrawals') loadWithdrawals();
+    if (tab === 'tasks') { loadAdminTasks(); loadAdminCompletions(); }
+  };
+});
 
+/* ═══════════ USERS ═══════════ */
 async function loadUsers() {
-
-    usersTable.innerHTML = `
-        <tr>
-            <td
-                colspan="10"
-                class="loading"
-            >
-                Loading users...
-            </td>
-        </tr>
-    `;
-
-
-    try {
-
-        const data =
-            await api(
-                "/api/admin/users"
-            );
-
-
-        renderUsers(
-            data.users || []
-        );
-
-
-    } catch (error) {
-
-        usersTable.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    ${escapeHtml(
-                        error.message
-                    )}
-                </td>
-            </tr>
-        `;
-
-    }
-
+  $('usersBody').innerHTML = '<tr><td colspan="10"><div class="empty">Loading users…</div></td></tr>';
+  try {
+    const d = await api('/api/admin/users');
+    allUsers = d.users || [];
+    renderUsers(allUsers);
+    updateStats(allUsers);
+    toast('Users loaded', 'ok');
+  } catch(err) {
+    toast(err.message, 'err');
+  }
 }
 
-
-/* =====================================
-   RENDER USERS
-===================================== */
-
-function renderUsers(
-    users
-) {
-
-    userCount.textContent =
-        `${users.length} user(s)`;
-
-
-    if (!users.length) {
-
-        usersTable.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    No users found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    usersTable.innerHTML =
-        users
-            .map(
-                user => {
-
-                    const statusClass =
-                        user.status ===
-                        "frozen"
-                            ? "frozen"
-                            : "active";
-
-
-                    const statusText =
-                        user.status ===
-                        "frozen"
-                            ? "FROZEN"
-                            : "ACTIVE";
-
-
-                    const verified =
-                        Number(
-                            user.verified
-                        ) === 1
-
-                            ? `
-                                <span
-                                    class="verified"
-                                >
-                                    YES
-                                </span>
-                            `
-
-                            : `
-                                <span
-                                    class="unverified"
-                                >
-                                    NO
-                                </span>
-                            `;
-
-
-                    const device =
-                        user.last_device
-
-                            ? escapeHtml(
-                                shorten(
-                                    user.last_device,
-                                    45
-                                )
-                            )
-
-                            : `
-                                <span
-                                    class="muted"
-                                >
-                                    None
-                                </span>
-                            `;
-
-
-                    const lastLogin =
-                        user.last_login
-
-                            ? escapeHtml(
-                                user.last_login
-                            )
-
-                            : `
-                                <span
-                                    class="muted"
-                                >
-                                    Never
-                                </span>
-                            `;
-
-
-                    const balance =
-                        formatMoney(
-                            user.balance
-                        );
-
-
-                    const action =
-                        user.status ===
-                        "frozen"
-
-                            ? `
-                                <button
-                                    class="unfreeze-btn"
-                                    onclick="
-                                        unfreezeUser(
-                                            ${Number(user.id)}
-                                        )
-                                    "
-                                >
-                                    Unfreeze
-                                </button>
-                            `
-
-                            : `
-                                <button
-                                    class="freeze-btn"
-                                    onclick="
-                                        freezeUser(
-                                            ${Number(user.id)}
-                                        )
-                                    "
-                                >
-                                    Freeze
-                                </button>
-                            `;
-
-
-                    return `
-                        <tr>
-
-                            <td>
-                                ${Number(user.id)}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${escapeHtml(
-                                        user.name
-                                    )}
-                                </strong>
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    user.phone
-                                )}
-                            </td>
-
-                            <td>
-                                <strong>
-                                    ${balance}
-                                </strong>
-                            </td>
-
-                            <td>
-                                <span
-                                    class="
-                                        status
-                                        ${statusClass}
-                                    "
-                                >
-                                    ${statusText}
-                                </span>
-                            </td>
-
-                            <td>
-                                ${verified}
-                            </td>
-
-                            <td>
-                                ${
-                                    user.last_ip
-                                        ? escapeHtml(
-                                            user.last_ip
-                                        )
-                                        : `
-                                            <span
-                                                class="muted"
-                                            >
-                                                None
-                                            </span>
-                                        `
-                                }
-                            </td>
-
-                            <td>
-                                ${device}
-                            </td>
-
-                            <td>
-                                ${lastLogin}
-                            </td>
-
-                            <td>
-
-                                <div
-                                    class="actions"
-                                >
-
-                                    <button
-                                        class="details-btn"
-                                        onclick="
-                                            viewUser(
-                                                ${Number(user.id)}
-                                            )
-                                        "
-                                    >
-                                        Details
-                                    </button>
-
-                                    ${action}
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-                    `;
-
-                }
-            )
-            .join("");
-
+function updateStats(users) {
+  $('sTotal').textContent = users.length;
+  $('sVerified').textContent = users.filter(u => u.verified).length;
+  $('sFrozen').textContent = users.filter(u => u.status === 'frozen').length;
+  const total = users.reduce((s, u) => s + (Number(u.balance) || 0), 0);
+  $('sTotalBal').textContent = money(total);
 }
 
-
-/* =====================================
-   USER DETAILS
-===================================== */
-
-async function viewUser(
-    id
-) {
-
-    detailsModal.classList.remove(
-        "hidden"
-    );
-
-
-    userDetails.innerHTML =
-        "Loading...";
-
-
-    try {
-
-        const data =
-            await api(
-                `/api/admin/users/${id}`
-            );
-
-
-        const user =
-            data.user;
-
-
-        const history =
-            data.loginHistory || [];
-
-
-        const withdrawals =
-            data.withdrawals || [];
-
-
-        userDetails.innerHTML = `
-
-            <div
-                class="details-grid"
-            >
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        ID
-                    </div>
-
-                    <div class="detail-value">
-                        ${Number(user.id)}
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Name
-                    </div>
-
-                    <div class="detail-value">
-                        ${escapeHtml(
-                            user.name
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Phone
-                    </div>
-
-                    <div class="detail-value">
-                        ${escapeHtml(
-                            user.phone
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Balance
-                    </div>
-
-                    <div class="detail-value">
-                        ${formatMoney(
-                            user.balance
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Status
-                    </div>
-
-                    <div class="detail-value">
-                        ${escapeHtml(
-                            user.status
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Verified
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            Number(
-                                user.verified
-                            ) === 1
-                                ? "YES"
-                                : "NO"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        GCash Name
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            user.gcash_name
-                                ? escapeHtml(
-                                    user.gcash_name
-                                )
-                                : "Not saved"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        GCash Number
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            user.gcash_number
-                                ? escapeHtml(
-                                    user.gcash_number
-                                )
-                                : "Not saved"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Last IP
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            user.last_ip
-                                ? escapeHtml(
-                                    user.last_ip
-                                )
-                                : "None"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Last Device
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            user.last_device
-                                ? escapeHtml(
-                                    user.last_device
-                                )
-                                : "None"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Last Login
-                    </div>
-
-                    <div class="detail-value">
-                        ${
-                            user.last_login
-                                ? escapeHtml(
-                                    user.last_login
-                                )
-                                : "Never"
-                        }
-                    </div>
-
-                </div>
-
-
-                <div class="detail-box">
-
-                    <div class="detail-label">
-                        Created
-                    </div>
-
-                    <div class="detail-value">
-                        ${escapeHtml(
-                            user.created_at
-                        )}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <h3>
-                Withdrawal History
-            </h3>
-
-
-            <div class="history">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Amount</th>
-                            <th>Method</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        ${
-                            withdrawals.length
-
-                                ? withdrawals
-                                    .map(
-                                        withdrawal => `
-                                            <tr>
-
-                                                <td>
-                                                    ${Number(
-                                                        withdrawal.id
-                                                    )}
-                                                </td>
-
-                                                <td>
-                                                    <strong>
-                                                        ${formatMoney(
-                                                            withdrawal.amount
-                                                        )}
-                                                    </strong>
-                                                </td>
-
-                                                <td>
-                                                    ${escapeHtml(
-                                                        withdrawal.method ||
-                                                        "GCash"
-                                                    )}
-                                                </td>
-
-                                                <td>
-                                                    ${statusBadge(
-                                                        withdrawal.status
-                                                    )}
-                                                </td>
-
-                                                <td>
-                                                    ${escapeHtml(
-                                                        withdrawal.created_at
-                                                    )}
-                                                </td>
-
-                                            </tr>
-                                        `
-                                    )
-                                    .join("")
-
-                                : `
-                                    <tr>
-                                        <td
-                                            colspan="5"
-                                            class="empty"
-                                        >
-                                            No withdrawal history.
-                                        </td>
-                                    </tr>
-                                `
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            <h3>
-                Login History
-            </h3>
-
-
-            <div class="history">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>Result</th>
-                            <th>IP</th>
-                            <th>Device</th>
-                            <th>Date</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        ${
-                            history.length
-
-                                ? history
-                                    .map(
-                                        log => `
-
-                                            <tr>
-
-                                                <td>
-                                                    ${
-                                                        Number(
-                                                            log.success
-                                                        ) === 1
-
-                                                            ? `
-                                                                <span
-                                                                    class="success"
-                                                                >
-                                                                    SUCCESS
-                                                                </span>
-                                                            `
-
-                                                            : `
-                                                                <span
-                                                                    class="failed"
-                                                                >
-                                                                    FAILED
-                                                                </span>
-                                                            `
-                                                    }
-                                                </td>
-
-                                                <td>
-                                                    ${escapeHtml(
-                                                        log.ip_address ||
-                                                        ""
-                                                    )}
-                                                </td>
-
-                                                <td>
-                                                    ${escapeHtml(
-                                                        log.user_agent ||
-                                                        ""
-                                                    )}
-                                                </td>
-
-                                                <td>
-                                                    ${escapeHtml(
-                                                        log.created_at
-                                                    )}
-                                                </td>
-
-                                            </tr>
-
-                                        `
-                                    )
-                                    .join("")
-
-                                : `
-                                    <tr>
-                                        <td
-                                            colspan="4"
-                                            class="empty"
-                                        >
-                                            No login history.
-                                        </td>
-                                    </tr>
-                                `
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        `;
-
-
-    } catch (error) {
-
-        userDetails.innerHTML =
-            `
-                <div class="error">
-                    ${escapeHtml(
-                        error.message
-                    )}
-                </div>
-            `;
-
-    }
-
-}
-
-
-/* =====================================
-   LOAD WITHDRAWALS
-===================================== */
-
-async function loadWithdrawals() {
-
-    withdrawalsTable.innerHTML = `
-        <tr>
-            <td
-                colspan="10"
-                class="loading"
-            >
-                Loading withdrawals...
-            </td>
-        </tr>
-    `;
-
-
-    try {
-
-        const search =
-            withdrawalSearch
-                .value
-                .trim();
-
-
-        const status =
-            withdrawalStatus
-                .value;
-
-
-        const params =
-            new URLSearchParams();
-
-
-        if (search) {
-
-            params.set(
-                "search",
-                search
-            );
-
-        }
-
-
-        if (status) {
-
-            params.set(
-                "status",
-                status
-            );
-
-        }
-
-
-        const query =
-            params.toString();
-
-
-        const url =
-            query
-                ? `/api/admin/withdrawals?${query}`
-                : `/api/admin/withdrawals`;
-
-
-        const data =
-            await api(url);
-
-
-        renderWithdrawalSummary(
-            data.summary || {}
-        );
-
-
-        renderWithdrawals(
-            data.withdrawals || []
-        );
-
-
-    } catch (error) {
-
-        withdrawalsTable.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    ${escapeHtml(
-                        error.message
-                    )}
-                </td>
-            </tr>
-        `;
-
-        withdrawalCountText.textContent =
-            "Unable to load withdrawals.";
-
-    }
-
-}
-
-
-/* =====================================
-   RENDER SUMMARY
-===================================== */
-
-function renderWithdrawalSummary(
-    summary
-) {
-
-    const total =
-        Number(
-            summary.total || 0
-        );
-
-
-    const pending =
-        Number(
-            summary.pending || 0
-        );
-
-
-    const approved =
-        Number(
-            summary.approved || 0
-        );
-
-
-    const rejected =
-        Number(
-            summary.rejected || 0
-        );
-
-
-    document
-        .getElementById(
-            "summaryTotal"
-        )
-        .textContent =
-        total;
-
-
-    document
-        .getElementById(
-            "summaryPending"
-        )
-        .textContent =
-        pending;
-
-
-    document
-        .getElementById(
-            "summaryApproved"
-        )
-        .textContent =
-        approved;
-
-
-    document
-        .getElementById(
-            "summaryRejected"
-        )
-        .textContent =
-        rejected;
-
-
-    document
-        .getElementById(
-            "summaryPendingAmount"
-        )
-        .textContent =
-        formatMoney(
-            summary.pending_amount
-        );
-
-
-    document
-        .getElementById(
-            "summaryApprovedAmount"
-        )
-        .textContent =
-        formatMoney(
-            summary.approved_amount
-        );
-
-
-    document
-        .getElementById(
-            "summaryRejectedAmount"
-        )
-        .textContent =
-        formatMoney(
-            summary.rejected_amount
-        );
-
-
-    withdrawalCountText.textContent =
-        `${total} withdrawal request(s)`;
-
-
-    const pendingBadge =
-        document.getElementById(
-            "pendingBadge"
-        );
-
-
-    pendingBadge.textContent =
-        pending;
-
-
-    if (pending > 0) {
-
-        pendingBadge.classList.remove(
-            "hidden"
-        );
-
-    } else {
-
-        pendingBadge.classList.add(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   RENDER WITHDRAWALS
-===================================== */
-
-function renderWithdrawals(
-    withdrawals
-) {
-
-    if (!withdrawals.length) {
-
-        withdrawalsTable.innerHTML = `
-            <tr>
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    No withdrawals found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    withdrawalsTable.innerHTML =
-        withdrawals
-            .map(
-                withdrawal => {
-
-                    const status =
-                        String(
-                            withdrawal.status ||
-                            ""
-                        )
-                        .toLowerCase();
-
-
-                    const userName =
-                        withdrawal.user_name ||
-                        "Unknown User";
-
-
-                    const phone =
-                        withdrawal.phone_number ||
-                        "";
-
-
-                    const gcashName =
-                        withdrawal.gcash_name ||
-                        "";
-
-
-                    const gcashNumber =
-                        withdrawal.gcash_number ||
-                        "";
-
-
-                    const method =
-                        withdrawal.method ||
-                        "GCash";
-
-
-                    const requested =
-                        withdrawal.created_at ||
-                        "";
-
-
-                    const processed =
-                        withdrawal.processed_at ||
-                        "";
-
-
-                    let actionButtons = `
-
-                        <button
-                            class="details-btn"
-                            onclick="
-                                viewWithdrawal(
-                                    ${Number(withdrawal.id)}
-                                )
-                            "
-                        >
-                            Details
-                        </button>
-
-                    `;
-
-
-                    if (
-                        status ===
-                        "pending"
-                    ) {
-
-                        actionButtons += `
-
-                            <button
-                                class="approve-btn"
-                                onclick="
-                                    approveWithdrawal(
-                                        ${Number(withdrawal.id)}
-                                    )
-                                "
-                            >
-                                Approve
-                            </button>
-
-
-                            <button
-                                class="reject-btn"
-                                onclick="
-                                    rejectWithdrawal(
-                                        ${Number(withdrawal.id)}
-                                    )
-                                "
-                            >
-                                Reject
-                            </button>
-
-                        `;
-
-                    }
-
-
-                    return `
-
-                        <tr>
-
-                            <td>
-                                <strong>
-                                    #${Number(
-                                        withdrawal.id
-                                    )}
-                                </strong>
-                            </td>
-
-
-                            <td>
-                                <strong>
-                                    ${escapeHtml(
-                                        userName
-                                    )}
-                                </strong>
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    phone
-                                )}
-                            </td>
-
-
-                            <td>
-                                <span
-                                    class="amount"
-                                >
-                                    ${formatMoney(
-                                        withdrawal.amount
-                                    )}
-                                </span>
-                            </td>
-
-
-                            <td>
-
-                                <div
-                                    class="gcash"
-                                >
-
-                                    <div
-                                        class="gcash-name"
-                                    >
-                                        ${escapeHtml(
-                                            gcashName ||
-                                            "Not available"
-                                        )}
-                                    </div>
-
-                                    <div
-                                        class="gcash-number"
-                                    >
-                                        ${escapeHtml(
-                                            gcashNumber ||
-                                            "No number"
-                                        )}
-                                    </div>
-
-                                </div>
-
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    method
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${statusBadge(
-                                    status
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    requested
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${
-                                    processed
-                                        ? escapeHtml(
-                                            processed
-                                        )
-                                        : `
-                                            <span
-                                                class="muted"
-                                            >
-                                                —
-                                            </span>
-                                        `
-                                }
-                            </td>
-
-
-                            <td>
-
-                                <div
-                                    class="actions"
-                                >
-                                    ${actionButtons}
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            )
-            .join("");
-
-}
-
-
-/* =====================================
-   WITHDRAWAL DETAILS
-===================================== */
-
-async function viewWithdrawal(
-    id
-) {
-
-    withdrawalModal.classList.remove(
-        "hidden"
-    );
-
-
-    withdrawalDetails.innerHTML =
-        "Loading...";
-
-
-    try {
-
-        const data =
-            await api(
-                `/api/admin/withdrawals/${id}`
-            );
-
-
-        const withdrawal =
-            data.withdrawal;
-
-
-        const status =
-            String(
-                withdrawal.status ||
-                ""
-            )
-            .toLowerCase();
-
-
-        const canProcess =
-            status === "pending";
-
-
-        withdrawalDetails.innerHTML = `
-
-            <div
-                class="withdrawal-info"
-            >
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Withdrawal ID
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        #${Number(
-                            withdrawal.id
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Status
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${statusBadge(
-                            status
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        User
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.user_name ||
-                            ""
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Phone
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.phone_number ||
-                            ""
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Amount
-                    </div>
-
-                    <div
-                        class="
-                            withdrawal-info-value
-                            withdrawal-amount
-                        "
-                    >
-                        ${formatMoney(
-                            withdrawal.amount
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Current User Balance
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${formatMoney(
-                            withdrawal.current_balance
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        GCash Name
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.gcash_name ||
-                            "Not available"
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        GCash Number
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.gcash_number ||
-                            "Not available"
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Method
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.method ||
-                            "GCash"
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Requested At
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${escapeHtml(
-                            withdrawal.created_at ||
-                            ""
-                        )}
-                    </div>
-
-                </div>
-
-
-                <div
-                    class="withdrawal-info-box"
-                >
-
-                    <div
-                        class="withdrawal-info-label"
-                    >
-                        Processed At
-                    </div>
-
-                    <div
-                        class="withdrawal-info-value"
-                    >
-                        ${
-                            withdrawal.processed_at
-                                ? escapeHtml(
-                                    withdrawal.processed_at
-                                )
-                                : "Not processed"
-                        }
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            ${
-                canProcess
-
-                    ? `
-
-                        <div
-                            class="modal-actions"
-                        >
-
-                            <button
-                                class="approve-btn"
-                                onclick="
-                                    approveWithdrawal(
-                                        ${Number(
-                                            withdrawal.id
-                                        )},
-                                        true
-                                    )
-                                "
-                            >
-                                Approve Withdrawal
-                            </button>
-
-
-                            <button
-                                class="reject-btn"
-                                onclick="
-                                    rejectWithdrawal(
-                                        ${Number(
-                                            withdrawal.id
-                                        )},
-                                        true
-                                    )
-                                "
-                            >
-                                Reject & Refund
-                            </button>
-
-                        </div>
-
-                    `
-
-                    : `
-                        <div
-                            class="muted"
-                            style="
-                                margin-top:15px;
-                            "
-                        >
-                            This withdrawal has already
-                            been processed.
-                        </div>
-                    `
-            }
-
-        `;
-
-
-    } catch (error) {
-
-        withdrawalDetails.innerHTML = `
-            <div class="error">
-                ${escapeHtml(
-                    error.message
-                )}
-            </div>
-        `;
-
-    }
-
-}
-
-
-/* =====================================
-   APPROVE WITHDRAWAL
-===================================== */
-
-async function approveWithdrawal(
-    id,
-    closeModalAfter = false
-) {
-
-    const ok =
-        confirm(
-            "Approve this withdrawal?\n\n" +
-            "The user's balance was already deducted " +
-            "when the withdrawal was submitted."
-        );
-
-
-    if (!ok) return;
-
-
-    try {
-
-        await api(
-            `/api/admin/withdrawals/${id}/approve`,
-            {
-                method:
-                    "POST"
-            }
-        );
-
-
-        showToast(
-            "Withdrawal approved successfully."
-        );
-
-
-        if (
-            closeModalAfter
-        ) {
-
-            withdrawalModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        await loadWithdrawals();
-
-        await loadUsers();
-
-
-    } catch (error) {
-
-        showToast(
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   REJECT WITHDRAWAL
-===================================== */
-
-async function rejectWithdrawal(
-    id,
-    closeModalAfter = false
-) {
-
-    const ok =
-        confirm(
-            "Reject this withdrawal?\n\n" +
-            "The withdrawal amount will be refunded " +
-            "to the user's balance."
-        );
-
-
-    if (!ok) return;
-
-
-    try {
-
-        await api(
-            `/api/admin/withdrawals/${id}/reject`,
-            {
-                method:
-                    "POST"
-            }
-        );
-
-
-        showToast(
-            "Withdrawal rejected and balance refunded."
-        );
-
-
-        if (
-            closeModalAfter
-        ) {
-
-            withdrawalModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        await loadWithdrawals();
-
-        await loadUsers();
-
-
-    } catch (error) {
-
-        showToast(
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   FREEZE USER
-===================================== */
-
-async function freezeUser(
-    id
-) {
-
-    const ok =
-        confirm(
-            "Freeze this account?"
-        );
-
-
-    if (!ok) return;
-
-
-    try {
-
-        await api(
-            `/api/admin/users/${id}/freeze`,
-            {
-                method:
-                    "POST"
-            }
-        );
-
-
-        showToast(
-            "Account frozen."
-        );
-
-
-        await loadUsers();
-
-
-    } catch (error) {
-
-        showToast(
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   UNFREEZE USER
-===================================== */
-
-async function unfreezeUser(
-    id
-) {
-
-    const ok =
-        confirm(
-            "Unfreeze this account?"
-        );
-
-
-    if (!ok) return;
-
-
-    try {
-
-        await api(
-            `/api/admin/users/${id}/unfreeze`,
-            {
-                method:
-                    "POST"
-            }
-        );
-
-
-        showToast(
-            "Account unfrozen."
-        );
-
-
-        await loadUsers();
-
-
-    } catch (error) {
-
-        showToast(
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =====================================
-   SEARCH
-===================================== */
-
-let searchTimer = null;
-
-
-withdrawalSearch.addEventListener(
-    "input",
-    () => {
-
-        clearTimeout(
-            searchTimer
-        );
-
-
-        searchTimer =
-            setTimeout(
-                loadWithdrawals,
-                350
-            );
-
-    }
-);
-
-
-/* =====================================
-   STATUS FILTER
-===================================== */
-
-withdrawalStatus.addEventListener(
-    "change",
-    loadWithdrawals
-);
-
-
-/* =====================================
-   CLEAR FILTERS
-===================================== */
-
-document
-    .getElementById(
-        "clearFiltersBtn"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            withdrawalSearch.value =
-                "";
-
-            withdrawalStatus.value =
-                "all";
-
-            loadWithdrawals();
-
-        }
-    );
-
-
-/* =====================================
-   REFRESH USERS
-===================================== */
-
-document
-    .getElementById(
-        "refreshUsersBtn"
-    )
-    .addEventListener(
-        "click",
-        loadUsers
-    );
-
-
-/* =====================================
-   REFRESH WITHDRAWALS
-===================================== */
-
-document
-    .getElementById(
-        "refreshWithdrawalsBtn"
-    )
-    .addEventListener(
-        "click",
-        loadWithdrawals
-    );
-
-
-/* =====================================
-   LOGOUT
-===================================== */
-
-document
-    .getElementById(
-        "logoutBtn"
-    )
-    .addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await api(
-                    "/api/admin/logout",
-                    {
-                        method:
-                            "POST"
-                    }
-                );
-
-            } catch {
-
-                /* Ignore logout error */
-
-            } finally {
-
-                hideAdmin();
-
-            }
-
-        }
-    );
-
-
-/* =====================================
-   CLOSE USER MODAL
-===================================== */
-
-document
-    .getElementById(
-        "closeModal"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            detailsModal.classList.add(
-                "hidden"
-            );
-
-        }
-    );
-
-
-/* =====================================
-   CLOSE WITHDRAWAL MODAL
-===================================== */
-
-document
-    .getElementById(
-        "closeWithdrawalModal"
-    )
-    .addEventListener(
-        "click",
-        () => {
-
-            withdrawalModal.classList.add(
-                "hidden"
-            );
-
-        }
-    );
-
-
-/* =====================================
-   CLICK OUTSIDE USER MODAL
-===================================== */
-
-detailsModal.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target ===
-            detailsModal
-        ) {
-
-            detailsModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================
-   CLICK OUTSIDE WITHDRAWAL MODAL
-===================================== */
-
-withdrawalModal.addEventListener(
-    "click",
-    event => {
-
-        if (
-            event.target ===
-            withdrawalModal
-        ) {
-
-            withdrawalModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================
-   ESC KEY
-===================================== */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key ===
-            "Escape"
-        ) {
-
-            detailsModal.classList.add(
-                "hidden"
-            );
-
-            withdrawalModal.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-/* =====================================
-   AUTO REFRESH WITHDRAWALS
-===================================== */
-
-function startWithdrawalAutoRefresh() {
-
-    stopWithdrawalAutoRefresh();
-
-
-    withdrawalTimer =
-        setInterval(
-            () => {
-
-                /*
-                 * Automatically checks for
-                 * new pending withdrawals
-                 * every 10 seconds.
-                 */
-
-                if (
-                    !adminPage.classList.contains(
-                        "hidden"
-                    )
-                ) {
-
-                    loadWithdrawals();
-
-                }
-
-            },
-            10000
-        );
-
-}
-
-
-function stopWithdrawalAutoRefresh() {
-
-    if (
-        withdrawalTimer
-    ) {
-
-        clearInterval(
-            withdrawalTimer
-        );
-
-        withdrawalTimer =
-            null;
-
-    }
-
-}
-
-
-/* =====================================
-   CHECK ADMIN SESSION
-===================================== */
-
-async function checkAdminSession() {
-
-    try {
-
-        await api(
-            "/api/admin/users"
-        );
-
-
-        showAdmin();
-
-
-    } catch {
-
-        loginPage.classList.remove(
-            "hidden"
-        );
-
-        adminPage.classList.add(
-            "hidden"
-        );
-
-        stopWithdrawalAutoRefresh();
-
-    }
-
-}
-
-
-/* =====================================
-   STATUS BADGE
-===================================== */
-
-function statusBadge(
-    status
-) {
-
-    const value =
-        String(
-            status || ""
-        )
-        .toLowerCase();
-
-
-    let className =
-        "pending-status";
-
-
-    let text =
-        "PENDING";
-
-
-    if (
-        value ===
-        "approved"
-    ) {
-
-        className =
-            "approved-status";
-
-        text =
-            "APPROVED";
-
-    }
-
-
-    if (
-        value ===
-        "rejected"
-    ) {
-
-        className =
-            "rejected-status";
-
-        text =
-            "REJECTED";
-
-    }
-
-
+function renderUsers(users) {
+  const body = $('usersBody');
+  if (!users.length) {
+    body.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-icon">👤</div>No users found.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = users.map(u => {
+    // Shorten device string to browser + OS only
+    const rawDevice = u.last_device || '';
+    const shortDevice = parseDevice(rawDevice);
     return `
-        <span
-            class="
-                status
-                ${className}
-            "
-        >
-            ${text}
-        </span>
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${u.id}</td>
+      <td><strong>${esc(u.name)}</strong></td>
+      <td style="color:var(--muted)">${esc(u.phone)}</td>
+      <td><strong style="color:var(--green3)">${money(u.balance)}</strong></td>
+      <td>${u.verified ? '<span class="pill verified">✓ Yes</span>' : '<span class="pill no">No</span>'}</td>
+      <td><span class="pill ${u.status==='frozen'?'frozen':'active'}">${esc(u.status||'active')}</span></td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${fmtDate(u.last_login)}</td>
+      <td>
+        ${u.last_ip
+          ? `<span style="font-family:monospace;font-size:12px;background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.2);padding:3px 8px;border-radius:6px;color:var(--gold2)">${esc(u.last_ip)}</span>`
+          : '<span style="color:var(--muted2);font-size:12px">—</span>'}
+      </td>
+      <td style="max-width:160px">
+        ${shortDevice
+          ? `<span style="font-size:11px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(rawDevice)}">${esc(shortDevice)}</span>`
+          : '<span style="color:var(--muted2);font-size:12px">—</span>'}
+      </td>
+      <td>
+        <div class="acts">
+          <button class="act-btn act-cash" onclick="openCash(${u.id})">💰 Add Cash</button>
+          <button class="act-btn act-details" onclick="viewUser(${u.id})">Details</button>
+          ${u.status === 'frozen'
+            ? `<button class="act-btn act-unfreeze" onclick="toggleFreeze(${u.id},'frozen')">Unfreeze</button>`
+            : `<button class="act-btn act-freeze" onclick="toggleFreeze(${u.id},'active')">Freeze</button>`
+          }
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* Parse UA string into short label */
+function parseDevice(ua) {
+  if (!ua) return '';
+  let browser = 'Unknown Browser';
+  let os = 'Unknown OS';
+  if (/Chrome\/(\d+)/.test(ua) && !/Chromium|Edge|OPR/.test(ua)) browser = 'Chrome';
+  else if (/Firefox\/(\d+)/.test(ua)) browser = 'Firefox';
+  else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+  else if (/Edge\/|Edg\//.test(ua)) browser = 'Edge';
+  else if (/OPR\/|Opera\//.test(ua)) browser = 'Opera';
+  else if (/MSIE|Trident/.test(ua)) browser = 'IE';
+  if (/Windows NT 10/.test(ua)) os = 'Windows 10/11';
+  else if (/Windows NT 6\.1/.test(ua)) os = 'Windows 7';
+  else if (/Windows/.test(ua)) os = 'Windows';
+  else if (/Android/.test(ua)) { const m = ua.match(/Android ([\d.]+)/); os = 'Android' + (m ? ' ' + m[1] : ''); }
+  else if (/iPhone|iPad/.test(ua)) os = /iPhone/.test(ua) ? 'iPhone' : 'iPad';
+  else if (/Mac OS X/.test(ua)) os = 'macOS';
+  else if (/Linux/.test(ua)) os = 'Linux';
+  return `${browser} · ${os}`;
+}
+
+/* Search */
+$('searchInput').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) return renderUsers(allUsers);
+  renderUsers(allUsers.filter(u =>
+    (u.name||'').toLowerCase().includes(q) ||
+    (u.phone||'').toLowerCase().includes(q)
+  ));
+});
+
+/* ═══════════ VIEW USER ═══════════ */
+async function viewUser(id) {
+  try {
+    const d = await api('/api/admin/users/' + id);
+    const u = d.user;
+    $('detailName').textContent = u.name;
+    $('detailBody').innerHTML = `
+      <div class="detail-row"><span class="d-label">Phone</span><span class="d-val">${esc(u.phone)}</span></div>
+      <div class="detail-row"><span class="d-label">Balance</span><span class="d-val" style="color:var(--green3)">${money(u.balance)}</span></div>
+      <div class="detail-row"><span class="d-label">Status</span><span class="d-val"><span class="pill ${u.status==='frozen'?'frozen':'active'}">${esc(u.status||'active')}</span></span></div>
+      <div class="detail-row"><span class="d-label">Verified</span><span class="d-val">${u.verified ? '<span class="pill verified">Yes</span>' : '<span class="pill no">No</span>'}</span></div>
+      <div class="detail-row"><span class="d-label">Invitation Code</span><span class="d-val" style="color:var(--gold2)">${esc(u.invitation_code||'—')}</span></div>
+      <div class="detail-row"><span class="d-label">Total Referrals</span><span class="d-val">${u.total_referrals||0}</span></div>
+      <div class="detail-row"><span class="d-label">Registered</span><span class="d-val">${fmtDate(u.created_at)}</span></div>
+      <div class="detail-row"><span class="d-label">Last Login</span><span class="d-val">${fmtDate(u.last_login)}</span></div>
+
+      <!-- ── IP & Device block ── -->
+      <div style="margin-top:16px;background:rgba(240,192,64,.05);border:1px solid rgba(240,192,64,.15);border-radius:10px;padding:14px;">
+        <div style="font-size:11px;font-weight:700;color:var(--gold3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">🌐 Last Login Info</div>
+        <div class="detail-row" style="padding:8px 0">
+          <span class="d-label">IP Address</span>
+          <span class="d-val">
+            ${u.last_ip
+              ? `<span style="font-family:monospace;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.25);padding:3px 10px;border-radius:6px;color:var(--gold2);font-size:13px">${esc(u.last_ip)}</span>`
+              : '<span style="color:var(--muted2)">No login recorded</span>'}
+          </span>
+        </div>
+        <div style="padding-top:10px">
+          <span class="d-label" style="display:block;margin-bottom:6px">Login Device / Browser</span>
+          ${u.last_device
+            ? `<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px 12px">
+                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${esc(parseDevice(u.last_device))}</div>
+                <div style="font-size:11px;color:var(--muted);word-break:break-all;line-height:1.5">${esc(u.last_device)}</div>
+               </div>`
+            : '<span style="color:var(--muted2);font-size:13px">No device recorded</span>'}
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--gold3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Login History</div>
+        ${(d.loginHistory||[]).length ? `
+          <div style="overflow-x:auto">
+            <table class="sub-table">
+              <tr><th>Date</th><th>Result</th><th>IP Address</th><th>Device</th></tr>
+              ${(d.loginHistory||[]).map(x => `
+                <tr>
+                  <td style="color:var(--muted);white-space:nowrap">${fmtDate(x.created_at)}</td>
+                  <td><span class="pill ${x.success?'active':'frozen'}">${x.success?'✓ Success':'✗ Failed'}</span></td>
+                  <td>
+                    ${x.ip_address
+                      ? `<span style="font-family:monospace;font-size:11px;color:var(--gold2)">${esc(x.ip_address)}</span>`
+                      : '<span style="color:var(--muted2)">—</span>'}
+                  </td>
+                  <td style="max-width:180px">
+                    <span style="font-size:11px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(x.user_agent||'')}">
+                      ${x.user_agent ? esc(parseDevice(x.user_agent)) : '—'}
+                    </span>
+                  </td>
+                </tr>
+              `).join('')}
+            </table>
+          </div>
+        ` : '<div class="empty" style="padding:16px">No login history</div>'}
+      </div>
     `;
-
+    $('detailModal').classList.remove('hidden');
+  } catch(err) {
+    toast(err.message, 'err');
+  }
 }
 
-
-/* =====================================
-   MONEY FORMAT
-===================================== */
-
-function formatMoney(
-    value
-) {
-
-    const number =
-        Number(value || 0);
-
-
-    return (
-        "₱" +
-        number.toLocaleString(
-            "en-PH",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        )
-    );
-
-}
-
-
-/* =====================================
-   SECURITY HELPERS
-===================================== */
-
-function escapeHtml(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-    .replaceAll(
-        "&",
-        "&amp;"
-    )
-    .replaceAll(
-        "<",
-        "&lt;"
-    )
-    .replaceAll(
-        ">",
-        "&gt;"
-    )
-    .replaceAll(
-        '"',
-        "&quot;"
-    )
-    .replaceAll(
-        "'",
-        "&#039;"
-    );
-
-}
-
-
-function shorten(
-    value,
-    length
-) {
-
-    value =
-        String(value);
-
-
-    if (
-        value.length <=
-        length
-    ) {
-
-        return value;
-
+/* ═══════════ FREEZE / UNFREEZE ═══════════ */
+function toggleFreeze(id, currentStatus) {
+  const action = currentStatus === 'frozen' ? 'unfreeze' : 'freeze';
+  const user = allUsers.find(u => u.id == id);
+  const name = user ? user.name : `User #${id}`;
+  confirm(
+    action === 'freeze' ? 'Freeze Account' : 'Unfreeze Account',
+    `Are you sure you want to ${action} the account of ${name}?`,
+    async () => {
+      try {
+        await api(`/api/admin/users/${id}/${action}`, { method: 'POST' });
+        toast(`Account ${action}d successfully`, 'ok');
+        await loadUsers();
+      } catch(err) {
+        toast(err.message, 'err');
+      }
     }
-
-
-    return (
-        value.substring(
-            0,
-            length
-        ) +
-        "..."
-    );                  
-
+  );
 }
 
+/* ═══════════ ADD CASH ═══════════ */
+function openCash(id) {
+  const user = allUsers.find(u => u.id == id);
+  if (!user) return;
+  cashTargetUser = user;
+  $('cashUserName').textContent = user.name;
+  $('cashUserPhone').textContent = user.phone;
+  $('cashCurBal').textContent = money(user.balance);
+  $('cashAmount').value = '';
+  $('cashNote').value = '';
+  $('cashErr').textContent = '';
+  $('cashBtn').textContent = 'Add Cash to Account';
+  $('cashBtn').disabled = false;
+  $('cashModal').classList.remove('hidden');
+}
 
-/* =====================================
-   START
-===================================== */
+$('cashForm').onsubmit = async e => {
+  e.preventDefault();
+  $('cashErr').textContent = '';
+  if (!cashTargetUser) return;
+  const amount = parseFloat($('cashAmount').value);
+  if (!amount || amount <= 0) { $('cashErr').textContent = 'Enter a valid amount.'; return; }
+  const note = $('cashNote').value.trim();
+  $('cashBtn').textContent = 'Processing...'; $('cashBtn').disabled = true;
+  try {
+    const d = await api(`/api/admin/users/${cashTargetUser.id}/add-cash`, {
+      method: 'POST',
+      body: JSON.stringify({ amount, note })
+    });
+    toast(`₱${amount.toLocaleString()} added to ${cashTargetUser.name}`, 'ok');
+    closeModal('cashModal');
+    await loadUsers();
+  } catch(err) {
+    $('cashErr').textContent = err.message;
+    $('cashBtn').textContent = 'Add Cash to Account'; $('cashBtn').disabled = false;
+  }
+};
 
-checkAdminSession();
+/* ═══════════ WITHDRAWALS ═══════════ */
+async function loadWithdrawals() {
+  $('wdBody').innerHTML = '<tr><td colspan="8"><div class="empty">Loading withdrawals…</div></td></tr>';
+  try {
+    const d = await api('/api/admin/withdrawals');
+    const list = d.withdrawals || [];
+    $('wdTotal').textContent = list.length;
+    $('wdPending').textContent = list.filter(w => w.status === 'Pending').length;
+    const total = list.reduce((s, w) => s + (Number(w.amount)||0), 0);
+    $('wdAmount').textContent = money(total);
+    renderWithdrawals(list);
+  } catch(err) {
+    toast(err.message, 'err');
+  }
+}
 
+function renderWithdrawals(list) {
+  const body = $('wdBody');
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">💸</div>No withdrawal requests.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = list.map(w => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${w.id}</td>
+      <td><strong>${esc(w.user_name||'—')}</strong></td>
+      <td>${esc(w.bank_name)}</td>
+      <td style="font-size:12px;color:var(--muted)">${esc(w.account_name)}<br>${esc(w.account_number)}</td>
+      <td><strong style="color:var(--red3)">-${money(w.amount)}</strong></td>
+      <td><span class="pill ${(w.status||'').toLowerCase()}">${esc(w.status)}</span></td>
+      <td style="color:var(--muted);font-size:12px">${fmtDate(w.created_at)}</td>
+      <td>
+        <div class="acts">
+          ${w.status === 'Pending' ? `
+            <button class="act-btn act-unfreeze" onclick="updateWithdrawal(${w.id},'Approved')">Approve</button>
+            <button class="act-btn act-freeze" onclick="updateWithdrawal(${w.id},'Rejected')">Reject</button>
+          ` : `<span style="color:var(--muted);font-size:12px">${esc(w.status)}</span>`}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function updateWithdrawal(id, status) {
+  const label = status === 'Approved' ? 'approve' : 'reject';
+  confirm(
+    `${status} Withdrawal`,
+    `Are you sure you want to ${label} withdrawal #${id}?`,
+    async () => {
+      try {
+        await api(`/api/admin/withdrawals/${id}/${status === 'Approved' ? 'approve' : 'reject'}`, { method:'POST' });
+        toast(`Withdrawal ${status.toLowerCase()}`, 'ok');
+        await loadWithdrawals();
+      } catch(err) {
+        toast(err.message, 'err');
+      }
+    }
+  );
+}
+
+/* ═══════════ NOTIFICATIONS ═══════════ */
+async function populateNotifUsers() {
+  try {
+    const d = await api('/api/admin/users');
+    const sel = $('notifUser');
+    const existing = sel.innerHTML;
+    sel.innerHTML = '<option value="all">📢 All Users</option>' +
+      (d.users||[]).map(u => `<option value="${u.id}">${esc(u.name)} (${esc(u.phone)})</option>`).join('');
+  } catch {}
+}
+
+$('notifForm').onsubmit = async e => {
+  e.preventDefault();
+  $('notifErr').textContent = '';
+  const userId = $('notifUser').value;
+  const title = $('notifTitle').value.trim();
+  const message = $('notifMsg').value.trim();
+  try {
+    const btn = e.target.querySelector('.btn-gold');
+    btn.textContent = 'Sending...'; btn.disabled = true;
+    await api('/api/admin/notify', {
+      method: 'POST',
+      body: JSON.stringify({ userId, title, message })
+    });
+    toast('Notification sent!', 'ok');
+    $('notifTitle').value = '';
+    $('notifMsg').value = '';
+    btn.textContent = 'Send Notification'; btn.disabled = false;
+  } catch(err) {
+    $('notifErr').textContent = err.message;
+    const btn = e.target.querySelector('.btn-gold');
+    btn.textContent = 'Send Notification'; btn.disabled = false;
+  }
+};
+
+/* ═══════════ TASKS ═══════════ */
+async function loadAdminTasks() {
+  try {
+    const d = await api('/api/admin/tasks');
+    renderAdminTasks(d.tasks || []);
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+function renderAdminTasks(tasks) {
+  const body = $('taskBody');
+  if (!tasks.length) {
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">💼</div>No tasks yet. Create one above!</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = tasks.map(t => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${t.id}</td>
+      <td><strong>${esc(t.title)}</strong><div style="color:var(--muted);font-size:12px">${esc(t.description || '')}</div></td>
+      <td><strong style="color:var(--green3)">${money(t.reward)}</strong></td>
+      <td style="color:var(--muted)">${t.submissions || 0} <span style="color:var(--gold2)">(${t.pending_submissions || 0} pending)</span></td>
+      <td><span class="pill ${t.status === 'active' ? 'active' : 'frozen'}">${esc(t.status)}</span></td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${fmtDate(t.created_at)}</td>
+      <td>
+        <div class="acts">
+          ${t.status === 'active'
+            ? `<button class="act-btn act-freeze" onclick="toggleTaskStatus(${t.id},'inactive')">Deactivate</button>`
+            : `<button class="act-btn act-unfreeze" onclick="toggleTaskStatus(${t.id},'active')">Activate</button>`}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function toggleTaskStatus(id, status) {
+  try {
+    const d = await api(`/api/admin/tasks/${id}/status`, {
+      method: 'POST',
+      body: JSON.stringify({ status })
+    });
+    toast(d.message, 'ok');
+    loadAdminTasks();
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+async function loadAdminCompletions() {
+  try {
+    const d = await api('/api/admin/task-completions');
+    renderAdminCompletions(d.completions || []);
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+function renderAdminCompletions(list) {
+  const body = $('taskCompBody');
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📨</div>No submissions yet.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = list.map(c => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${c.id}</td>
+      <td><strong>${esc(c.user_name)}</strong><div style="color:var(--muted);font-size:12px">${esc(c.user_email || '')}</div></td>
+      <td>${esc(c.task_title)}</td>
+      <td style="max-width:200px;color:var(--muted);font-size:12px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.proof || '')}">${esc(c.proof || '—')}</div></td>
+      <td><strong style="color:var(--green3)">${money(c.task_reward)}</strong></td>
+      <td><span class="pill ${(c.status||'').toLowerCase()}">${esc(c.status)}</span></td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${fmtDate(c.created_at)}</td>
+      <td>
+        <div class="acts">
+          ${c.status === 'Pending'
+            ? `<button class="act-btn act-cash" onclick="reviewCompletion(${c.id},'Approved')">✓ Approve</button>
+               <button class="act-btn act-freeze" onclick="reviewCompletion(${c.id},'Rejected')">✗ Reject</button>`
+            : '<span style="color:var(--muted2);font-size:12px">—</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function reviewCompletion(id, status) {
+  const label = status === 'Approved' ? 'approve' : 'reject';
+  if (status === 'Rejected' && !confirm(`Review this submission as ${status}? Reward will be credited if approved.`)) return;
+  try {
+    const d = await api(`/api/admin/task-completions/${id}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ status })
+    });
+    toast(d.message, 'ok');
+    await loadAdminCompletions();
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+$('taskForm').onsubmit = async e => {
+  e.preventDefault();
+  $('taskErr').textContent = '';
+  const btn = e.target.querySelector('.btn-gold');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  try {
+    await api('/api/admin/tasks', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: $('taskTitle').value.trim(),
+        description: $('taskDesc').value.trim(),
+        reward: $('taskReward').value
+      })
+    });
+    toast('Task created!', 'ok');
+    $('taskTitle').value = '';
+    $('taskDesc').value = '';
+    $('taskReward').value = '';
+    loadAdminTasks();
+  } catch(err) {
+    $('taskErr').textContent = err.message;
+  }
+  btn.textContent = 'Create Task'; btn.disabled = false;
+};
+
+/* ═══════════ AUTO-LOGIN CHECK ═══════════ */
+(async () => {
+  try {
+    const d = await api('/api/admin/me');
+    if (d.loggedIn) {
+      $('loginScreen').classList.add('hidden');
+      $('adminShell').classList.remove('hidden');
+      await loadUsers();
+      await populateNotifUsers();
+    }
+  } catch {}
+})();
 </script>
-
 </body>
 </html>
-
-
