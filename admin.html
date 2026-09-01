@@ -1,0 +1,3994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>TTPRO Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0f1f3a 100%);
+            color: #f4f7fb;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 30%, rgba(37,99,235,.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 70%, rgba(124,58,237,.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+        button {
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .3s ease;
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* =====================================
+           LOGIN
+        ===================================== */
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: linear-gradient(135deg, rgba(20,30,50,.95) 0%, rgba(15,25,45,.95) 100%);
+            padding: 40px 35px;
+            border-radius: 20px;
+            border: 1px solid rgba(69,162,255,.2);
+            box-shadow: 0 20px 60px rgba(37,99,235,.25), inset 0 1px 0 rgba(255,255,255,.05);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #2563eb, #7c5cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #a5b4c4;
+            margin-bottom: 28px;
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2563eb;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid rgba(69,162,255,.2);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            background: rgba(20,30,50,.5);
+            color: #f4f7fb;
+            transition: all .3s ease;
+        }
+
+        input::placeholder,
+        select {
+            color: #718397;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: rgba(20,30,50,.7);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+        }
+
+        .primary {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 8px 24px rgba(37,99,235,.35);
+        }
+
+        .primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            transform: translateY(-2px);
+        }
+
+        .primary:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #ff8b8b;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        /* =====================================
+           ADMIN
+        ===================================== */
+
+        .admin-page {
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            min-height: 68px;
+            background: linear-gradient(135deg, rgba(10,20,35,.96) 0%, rgba(20,30,45,.96) 100%);
+            border-bottom: 2px solid rgba(69,162,255,.3);
+            box-shadow: 0 4px 20px rgba(37,99,235,.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #2563eb, #7c5cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logout {
+            background: rgba(231,76,60,.12);
+            color: #ff8b8b;
+            border: 1px solid #6b2218;
+        }
+
+        .logout:hover {
+            background: rgba(231,76,60,.25);
+            box-shadow: 0 0 12px rgba(231,76,60,.2);
+        }
+
+        main {
+            padding: 28px;
+            max-width: 1450px;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =====================================
+           TABS
+        ===================================== */
+
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(69,162,255,.1);
+            color: #a5b4c4;
+            border: 1px solid rgba(69,162,255,.2);
+            transition: all .3s ease;
+        }
+
+        .tab-btn:hover {
+            background: rgba(69,162,255,.15);
+            border-color: rgba(69,162,255,.3);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(37,99,235,.2) 0%, rgba(37,99,235,.1) 100%);
+            color: #2563eb;
+            border-color: rgba(69,162,255,.4);
+            box-shadow: 0 0 12px rgba(37,99,235,.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* =====================================
+           TOPBAR
+        ===================================== */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            margin: 0 0 5px 0;
+            color: #f4f7fb;
+            font-size: 24px;
+        }
+
+        .refresh {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(37,99,235,.3);
+        }
+
+        .refresh:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+            transform: translateY(-2px);
+        }
+
+        /* =====================================
+           SUMMARY CARDS
+        ===================================== */
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(37,99,235,.1) 0%, rgba(37,99,235,.05) 100%);
+            border: 1px solid rgba(69,162,255,.2);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(37,99,235,.1);
+            transition: all .3s ease;
+        }
+
+        .summary-card:hover {
+            border-color: rgba(69,162,255,.4);
+            box-shadow: 0 12px 32px rgba(37,99,235,.2);
+            transform: translateY(-4px);
+        }
+
+        .summary-label {
+            color: #a5b4c4;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: #f4f7fb;
+        }
+
+        .summary-card.pending {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .summary-card.approved {
+            border-left: 4px solid #22a45d;
+        }
+
+        .summary-card.rejected {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .summary-card.total {
+            border-left: 4px solid #2563eb;
+        }
+
+        /* =====================================
+           TABLE
+        ===================================== */
+
+        .table-wrapper {
+            background: linear-gradient(135deg, rgba(20,30,50,.6) 0%, rgba(15,25,45,.6) 100%);
+            border: 1px solid rgba(69,162,255,.2);
+            border-radius: 16px;
+            overflow-x: auto;
+            box-shadow: 0 12px 32px rgba(37,99,235,.15);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th,
+        td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(69,162,255,.15);
+            vertical-align: top;
+        }
+
+        th {
+            background: rgba(10,20,35,.5);
+            font-size: 12px;
+            color: #2563eb;
+            white-space: nowrap;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        tbody tr {
+            transition: all .2s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(37,99,235,.08);
+        }
+
+        td {
+            color: #f4f7fb;
+        }
+
+        /* =====================================
+           STATUS
+        ===================================== */
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .active {
+            background: rgba(46,204,113,.15);
+            color: #58d68d;
+            border: 1px solid rgba(46,204,113,.3);
+        }
+
+        .frozen {
+            background: rgba(231,76,60,.15);
+            color: #ff8b8b;
+            border: 1px solid rgba(231,76,60,.3);
+        }
+
+        .pending-status {
+            background: rgba(245,158,11,.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245,158,11,.3);
+        }
+
+        .approved-status {
+            background: rgba(46,204,113,.15);
+            color: #58d68d;
+            border: 1px solid rgba(46,204,113,.3);
+        }
+
+        .rejected-status {
+            background: rgba(231,76,60,.15);
+            color: #ff8b8b;
+            border: 1px solid rgba(231,76,60,.3);
+        }
+
+        .verified {
+            color: #58d68d;
+            font-weight: bold;
+        }
+
+        .unverified {
+            color: #ff8b8b;
+        }
+
+        /* =====================================
+           ACTIONS
+        ===================================== */
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .details-btn {
+            background: rgba(69,162,255,.1);
+            color: #2563eb;
+            border: 1px solid rgba(69,162,255,.3);
+        }
+
+        .details-btn:hover {
+            background: rgba(69,162,255,.2);
+            border-color: rgba(69,162,255,.5);
+        }
+
+        .freeze-btn {
+            background: rgba(231,76,60,.15);
+            color: #ff8b8b;
+            border: 1px solid rgba(231,76,60,.3);
+        }
+
+        .freeze-btn:hover {
+            background: rgba(231,76,60,.25);
+            border-color: rgba(231,76,60,.5);
+        }
+
+        .unfreeze-btn {
+            background: rgba(46,204,113,.15);
+            color: #58d68d;
+            border: 1px solid rgba(46,204,113,.3);
+        }
+
+        .unfreeze-btn:hover {
+            background: rgba(46,204,113,.25);
+            border-color: rgba(46,204,113,.5);
+        }
+
+        .approve-btn {
+            background: rgba(46,204,113,.15);
+            color: #58d68d;
+            border: 1px solid rgba(46,204,113,.3);
+        }
+
+        .approve-btn:hover {
+            background: rgba(46,204,113,.25);
+            border-color: rgba(46,204,113,.5);
+        }
+
+        .reject-btn {
+            background: rgba(231,76,60,.15);
+            color: #ff8b8b;
+            border: 1px solid rgba(231,76,60,.3);
+        }
+
+        .reject-btn:hover {
+            background: rgba(231,76,60,.25);
+            border-color: rgba(231,76,60,.5);
+        }
+
+        /* =====================================
+           WITHDRAWAL FILTERS
+        ===================================== */
+
+        .filter-bar {
+            background: linear-gradient(135deg, rgba(37,99,235,.1) 0%, rgba(37,99,235,.05) 100%);
+            border: 1px solid rgba(69,162,255,.2);
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(37,99,235,.1);
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: minmax(200px, 1fr) 200px auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            margin: 0;
+        }
+
+        .search-input {
+            min-width: 0;
+        }
+
+        .amount {
+            font-weight: bold;
+            color: #f4f7fb;
+            white-space: nowrap;
+        }
+
+        .gcash {
+            line-height: 1.5;
+        }
+
+        .gcash-name {
+            font-weight: 600;
+            color: #f4f7fb;
+        }
+
+        .gcash-number {
+            color: #a5b4c4;
+            font-size: 12px;
+        }
+
+        /* =====================================
+           MUTED / EMPTY
+        ===================================== */
+
+        .muted {
+            color: #a5b4c4;
+            font-size: 12px;
+        }
+
+        .empty {
+            padding: 35px !important;
+            text-align: center !important;
+            color: #a5b4c4;
+        }
+
+        .loading {
+            padding: 25px !important;
+            text-align: center !important;
+            color: #a5b4c4;
+        }
+
+        /* =====================================
+           MODAL
+        ===================================== */
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.7);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 850px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: linear-gradient(135deg, rgba(20,30,50,.98) 0%, rgba(15,25,45,.98) 100%);
+            border: 1px solid rgba(69,162,255,.2);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 20px 60px rgba(37,99,235,.3);
+        }
+
+        .withdrawal-modal-card {
+            max-width: 700px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #f4f7fb;
+            font-size: 20px;
+        }
+
+        .close {
+            background: rgba(69,162,255,.1);
+            color: #2563eb;
+            font-size: 18px;
+            border: 1px solid rgba(69,162,255,.2);
+        }
+
+        .close:hover {
+            background: rgba(69,162,255,.2);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-box {
+            background: rgba(37,99,235,.08);
+            border: 1px solid rgba(69,162,255,.2);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .detail-label {
+            color: #a5b4c4;
+            font-size: 11px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #f4f7fb;
+            word-break: break-word;
+        }
+
+        .history {
+            overflow-x: auto;
+        }
+
+        .history table {
+            min-width: 650px;
+        }
+
+        .success {
+            color: #58d68d;
+            font-weight: bold;
+        }
+
+        .failed {
+            color: #ff8b8b;
+            font-weight: bold;
+        }
+
+        /* =====================================
+           WITHDRAWAL MODAL
+        ===================================== */
+
+        .withdrawal-info {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .withdrawal-info-box {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .withdrawal-info-label {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .withdrawal-info-value {
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .withdrawal-amount {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* =====================================
+           TOAST
+        ===================================== */
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 300;
+            min-width: 260px;
+            max-width: 400px;
+            padding: 14px 17px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,.2);
+            font-weight: 600;
+        }
+
+        .toast.success-toast {
+            background: #16a34a;
+        }
+
+        .toast.error-toast {
+            background: #dc2626;
+        }
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 900px) {
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .filter-bar {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .filter-bar button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            main {
+                padding: 15px;
+            }
+
+            header {
+                padding: 0 15px;
+            }
+
+            .header-title {
+                font-size: 17px;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid,
+            .withdrawal-info {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar .refresh {
+                width: 100%;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+
+            .modal-card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =====================================
+     ADMIN LOGIN
+===================================== -->
+
+<section
+    id="loginPage"
+    class="login-page"
+>
+
+    <div class="login-card">
+
+        <div class="logo">
+            TTPRO
+        </div>
+
+        <div class="subtitle">
+            Administrator Panel
+        </div>
+
+        <div
+            id="loginError"
+            class="error hidden"
+        ></div>
+
+        <form id="adminLoginForm">
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                id="username"
+                type="text"
+                placeholder="Admin Username"
+                autocomplete="username"
+                required
+            >
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                id="password"
+                type="password"
+                placeholder="Admin password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button
+                class="primary"
+                type="submit"
+            >
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     ADMIN DASHBOARD
+===================================== -->
+
+<section
+    id="adminPage"
+    class="admin-page hidden"
+>
+
+    <header>
+
+        <div class="header-title">
+            TTPRO Admin
+        </div>
+
+        <button
+            id="logoutBtn"
+            class="logout"
+        >
+            Logout
+        </button>
+
+    </header>
+
+
+    <main>
+
+        <!-- =================================
+             TABS
+        ================================== -->
+
+        <div class="tabs">
+
+            <button
+                class="tab-btn active"
+                data-tab="usersTab"
+            >
+                Users
+            </button>
+
+            <button
+                class="tab-btn"
+                data-tab="withdrawalsTab"
+            >
+                Withdrawals
+                <span
+                    id="pendingBadge"
+                    class="status pending-status hidden"
+                    style="margin-left:5px;"
+                >
+                    0
+                </span>
+            </button>
+
+        </div>
+
+
+        <!-- =================================
+             USERS TAB
+        ================================== -->
+
+        <section
+            id="usersTab"
+            class="tab-content active"
+        >
+
+            <div class="topbar">
+
+                <div>
+
+                    <h1>
+                        Users
+                    </h1>
+
+                    <div
+                        id="userCount"
+                        class="muted"
+                    >
+                        Loading...
+                    </div>
+
+                </div>
+
+                <button
+                    id="refreshUsersBtn"
+                    class="refresh"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Phone</th>
+                            <th>Balance</th>
+                            <th>Status</th>
+                            <th>Verified</th>
+                            <th>Last IP</th>
+                            <th>Device</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="usersTable">
+
+                        <tr>
+                            <td
+                                colspan="10"
+                                class="loading"
+                            >
+                                Loading users...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             WITHDRAWALS TAB
+        ================================== -->
+
+        <section
+            id="withdrawalsTab"
+            class="tab-content"
+        >
+
+            <div class="topbar">
+
+                <div>
+
+                    <h1>
+                        Withdrawals
+                    </h1>
+
+                    <div
+                        id="withdrawalCountText"
+                        class="muted"
+                    >
+                        Loading...
+                    </div>
+
+                </div>
+
+                <button
+                    id="refreshWithdrawalsBtn"
+                    class="refresh"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <!-- SUMMARY -->
+
+            <div class="summary-grid">
+
+                <div class="summary-card total">
+
+                    <div class="summary-label">
+                        Total Requests
+                    </div>
+
+                    <div
+                        id="summaryTotal"
+                        class="summary-value"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card pending">
+
+                    <div class="summary-label">
+                        Pending
+                    </div>
+
+                    <div
+                        id="summaryPending"
+                        class="summary-value"
+                    >
+                        0
+                    </div>
+
+                    <div
+                        id="summaryPendingAmount"
+                        class="muted"
+                    >
+                        ₱0.00
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card approved">
+
+                    <div class="summary-label">
+                        Approved
+                    </div>
+
+                    <div
+                        id="summaryApproved"
+                        class="summary-value"
+                    >
+                        0
+                    </div>
+
+                    <div
+                        id="summaryApprovedAmount"
+                        class="muted"
+                    >
+                        ₱0.00
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card rejected">
+
+                    <div class="summary-label">
+                        Rejected
+                    </div>
+
+                    <div
+                        id="summaryRejected"
+                        class="summary-value"
+                    >
+                        0
+                    </div>
+
+                    <div
+                        id="summaryRejectedAmount"
+                        class="muted"
+                    >
+                        ₱0.00
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FILTER -->
+
+            <div class="filter-bar">
+
+                <input
+                    id="withdrawalSearch"
+                    class="search-input"
+                    type="text"
+                    placeholder="Search name, phone, GCash..."
+                >
+
+                <select
+                    id="withdrawalStatus"
+                >
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="pending">
+                        Pending
+                    </option>
+
+                    <option value="approved">
+                        Approved
+                    </option>
+
+                    <option value="rejected">
+                        Rejected
+                    </option>
+                </select>
+
+                <button
+                    id="clearFiltersBtn"
+                    class="details-btn"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <!-- WITHDRAWAL TABLE -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Phone</th>
+                            <th>Amount</th>
+                            <th>GCash</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Requested</th>
+                            <th>Processed</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="withdrawalsTable"
+                    >
+
+                        <tr>
+                            <td
+                                colspan="10"
+                                class="loading"
+                            >
+                                Loading withdrawals...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</section>
+
+
+<!-- =====================================
+     USER DETAILS MODAL
+===================================== -->
+
+<div
+    id="detailsModal"
+    class="modal hidden"
+>
+
+    <div class="modal-card">
+
+        <div class="modal-header">
+
+            <h2>
+                User Details
+            </h2>
+
+            <button
+                id="closeModal"
+                class="close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="userDetails">
+            Loading...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     WITHDRAWAL DETAILS MODAL
+===================================== -->
+
+<div
+    id="withdrawalModal"
+    class="modal hidden"
+>
+
+    <div
+        class="modal-card withdrawal-modal-card"
+    >
+
+        <div class="modal-header">
+
+            <h2>
+                Withdrawal Details
+            </h2>
+
+            <button
+                id="closeWithdrawalModal"
+                class="close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div id="withdrawalDetails">
+            Loading...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     TOAST
+===================================== -->
+
+<div
+    id="toast"
+    class="toast hidden"
+></div>
+
+
+<script>
+
+/* =====================================
+   ELEMENTS
+===================================== */
+
+const loginPage =
+    document.getElementById(
+        "loginPage"
+    );
+
+const adminPage =
+    document.getElementById(
+        "adminPage"
+    );
+
+const loginForm =
+    document.getElementById(
+        "adminLoginForm"
+    );
+
+const loginError =
+    document.getElementById(
+        "loginError"
+    );
+
+const usersTable =
+    document.getElementById(
+        "usersTable"
+    );
+
+const userCount =
+    document.getElementById(
+        "userCount"
+    );
+
+const detailsModal =
+    document.getElementById(
+        "detailsModal"
+    );
+
+const userDetails =
+    document.getElementById(
+        "userDetails"
+    );
+
+const withdrawalsTable =
+    document.getElementById(
+        "withdrawalsTable"
+    );
+
+const withdrawalSearch =
+    document.getElementById(
+        "withdrawalSearch"
+    );
+
+const withdrawalStatus =
+    document.getElementById(
+        "withdrawalStatus"
+    );
+
+const withdrawalModal =
+    document.getElementById(
+        "withdrawalModal"
+    );
+
+const withdrawalDetails =
+    document.getElementById(
+        "withdrawalDetails"
+    );
+
+const toast =
+    document.getElementById(
+        "toast"
+    );
+
+
+/* =====================================
+   STATE
+===================================== */
+
+let withdrawalTimer = null;
+
+let toastTimer = null;
+
+
+/* =====================================
+   API HELPER
+===================================== */
+
+async function api(
+    url,
+    options = {}
+) {
+
+    const response =
+        await fetch(
+            url,
+            {
+                credentials:
+                    "same-origin",
+
+                ...options,
+
+                headers: {
+                    "Content-Type":
+                        "application/json",
+
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+
+    let data = {};
+
+    try {
+
+        data =
+            await response.json();
+
+    } catch {
+
+        data = {};
+
+    }
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            data.message ||
+            "Request failed."
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+/* =====================================
+   TOAST
+===================================== */
+
+function showToast(
+    message,
+    type = "success"
+) {
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toast.textContent =
+        message;
+
+
+    toast.className =
+        "toast";
+
+
+    if (type === "error") {
+
+        toast.classList.add(
+            "error-toast"
+        );
+
+    } else {
+
+        toast.classList.add(
+            "success-toast"
+        );
+
+    }
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.add(
+                    "hidden"
+                );
+
+            },
+            3000
+        );
+
+}
+
+
+/* =====================================
+   ADMIN LOGIN
+===================================== */
+
+loginForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+
+        loginError.classList.add(
+            "hidden"
+        );
+
+
+        const username =
+            document
+                .getElementById(
+                    "username"
+                )
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById(
+                    "password"
+                )
+                .value;
+
+
+        try {
+
+            await api(
+                "/api/admin/login",
+                {
+                    method:
+                        "POST",
+
+                    body:
+                        JSON.stringify({
+                            username,
+                            password
+                        })
+                }
+            );
+
+
+            showAdmin();
+
+
+        } catch (error) {
+
+            loginError.textContent =
+                error.message;
+
+
+            loginError.classList.remove(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   SHOW ADMIN
+===================================== */
+
+function showAdmin() {
+
+    loginPage.classList.add(
+        "hidden"
+    );
+
+    adminPage.classList.remove(
+        "hidden"
+    );
+
+
+    loadUsers();
+
+    loadWithdrawals();
+
+    startWithdrawalAutoRefresh();
+
+}
+
+
+/* =====================================
+   HIDE ADMIN
+===================================== */
+
+function hideAdmin() {
+
+    adminPage.classList.add(
+        "hidden"
+    );
+
+    loginPage.classList.remove(
+        "hidden"
+    );
+
+
+    stopWithdrawalAutoRefresh();
+
+
+    document
+        .getElementById("password")
+        .value = "";
+
+}
+
+
+/* =====================================
+   TABS
+===================================== */
+
+document
+    .querySelectorAll(".tab-btn")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const tabId =
+                    button.dataset.tab;
+
+
+                document
+                    .querySelectorAll(
+                        ".tab-btn"
+                    )
+                    .forEach(btn => {
+
+                        btn.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                document
+                    .querySelectorAll(
+                        ".tab-content"
+                    )
+                    .forEach(tab => {
+
+                        tab.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                button.classList.add(
+                    "active"
+                );
+
+
+                document
+                    .getElementById(
+                        tabId
+                    )
+                    .classList.add(
+                        "active"
+                    );
+
+
+                if (
+                    tabId ===
+                    "withdrawalsTab"
+                ) {
+
+                    loadWithdrawals();
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* =====================================
+   LOAD USERS
+===================================== */
+
+async function loadUsers() {
+
+    usersTable.innerHTML = `
+        <tr>
+            <td
+                colspan="10"
+                class="loading"
+            >
+                Loading users...
+            </td>
+        </tr>
+    `;
+
+
+    try {
+
+        const data =
+            await api(
+                "/api/admin/users"
+            );
+
+
+        renderUsers(
+            data.users || []
+        );
+
+
+    } catch (error) {
+
+        usersTable.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* =====================================
+   RENDER USERS
+===================================== */
+
+function renderUsers(
+    users
+) {
+
+    userCount.textContent =
+        `${users.length} user(s)`;
+
+
+    if (!users.length) {
+
+        usersTable.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    No users found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    usersTable.innerHTML =
+        users
+            .map(
+                user => {
+
+                    const statusClass =
+                        user.status ===
+                        "frozen"
+                            ? "frozen"
+                            : "active";
+
+
+                    const statusText =
+                        user.status ===
+                        "frozen"
+                            ? "FROZEN"
+                            : "ACTIVE";
+
+
+                    const verified =
+                        Number(
+                            user.verified
+                        ) === 1
+
+                            ? `
+                                <span
+                                    class="verified"
+                                >
+                                    YES
+                                </span>
+                            `
+
+                            : `
+                                <span
+                                    class="unverified"
+                                >
+                                    NO
+                                </span>
+                            `;
+
+
+                    const device =
+                        user.last_device
+
+                            ? escapeHtml(
+                                shorten(
+                                    user.last_device,
+                                    45
+                                )
+                            )
+
+                            : `
+                                <span
+                                    class="muted"
+                                >
+                                    None
+                                </span>
+                            `;
+
+
+                    const lastLogin =
+                        user.last_login
+
+                            ? escapeHtml(
+                                user.last_login
+                            )
+
+                            : `
+                                <span
+                                    class="muted"
+                                >
+                                    Never
+                                </span>
+                            `;
+
+
+                    const balance =
+                        formatMoney(
+                            user.balance
+                        );
+
+
+                    const action =
+                        user.status ===
+                        "frozen"
+
+                            ? `
+                                <button
+                                    class="unfreeze-btn"
+                                    onclick="
+                                        unfreezeUser(
+                                            ${Number(user.id)}
+                                        )
+                                    "
+                                >
+                                    Unfreeze
+                                </button>
+                            `
+
+                            : `
+                                <button
+                                    class="freeze-btn"
+                                    onclick="
+                                        freezeUser(
+                                            ${Number(user.id)}
+                                        )
+                                    "
+                                >
+                                    Freeze
+                                </button>
+                            `;
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${Number(user.id)}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        user.name
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    user.phone
+                                )}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    ${balance}
+                                </strong>
+                            </td>
+
+                            <td>
+                                <span
+                                    class="
+                                        status
+                                        ${statusClass}
+                                    "
+                                >
+                                    ${statusText}
+                                </span>
+                            </td>
+
+                            <td>
+                                ${verified}
+                            </td>
+
+                            <td>
+                                ${
+                                    user.last_ip
+                                        ? escapeHtml(
+                                            user.last_ip
+                                        )
+                                        : `
+                                            <span
+                                                class="muted"
+                                            >
+                                                None
+                                            </span>
+                                        `
+                                }
+                            </td>
+
+                            <td>
+                                ${device}
+                            </td>
+
+                            <td>
+                                ${lastLogin}
+                            </td>
+
+                            <td>
+
+                                <div
+                                    class="actions"
+                                >
+
+                                    <button
+                                        class="details-btn"
+                                        onclick="
+                                            viewUser(
+                                                ${Number(user.id)}
+                                            )
+                                        "
+                                    >
+                                        Details
+                                    </button>
+
+                                    ${action}
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =====================================
+   USER DETAILS
+===================================== */
+
+async function viewUser(
+    id
+) {
+
+    detailsModal.classList.remove(
+        "hidden"
+    );
+
+
+    userDetails.innerHTML =
+        "Loading...";
+
+
+    try {
+
+        const data =
+            await api(
+                `/api/admin/users/${id}`
+            );
+
+
+        const user =
+            data.user;
+
+
+        const history =
+            data.loginHistory || [];
+
+
+        const withdrawals =
+            data.withdrawals || [];
+
+
+        userDetails.innerHTML = `
+
+            <div
+                class="details-grid"
+            >
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        ID
+                    </div>
+
+                    <div class="detail-value">
+                        ${Number(user.id)}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Name
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHtml(
+                            user.name
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Phone
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHtml(
+                            user.phone
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Balance
+                    </div>
+
+                    <div class="detail-value">
+                        ${formatMoney(
+                            user.balance
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Status
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHtml(
+                            user.status
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Verified
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            Number(
+                                user.verified
+                            ) === 1
+                                ? "YES"
+                                : "NO"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        GCash Name
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            user.gcash_name
+                                ? escapeHtml(
+                                    user.gcash_name
+                                )
+                                : "Not saved"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        GCash Number
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            user.gcash_number
+                                ? escapeHtml(
+                                    user.gcash_number
+                                )
+                                : "Not saved"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Last IP
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            user.last_ip
+                                ? escapeHtml(
+                                    user.last_ip
+                                )
+                                : "None"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Last Device
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            user.last_device
+                                ? escapeHtml(
+                                    user.last_device
+                                )
+                                : "None"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Last Login
+                    </div>
+
+                    <div class="detail-value">
+                        ${
+                            user.last_login
+                                ? escapeHtml(
+                                    user.last_login
+                                )
+                                : "Never"
+                        }
+                    </div>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <div class="detail-label">
+                        Created
+                    </div>
+
+                    <div class="detail-value">
+                        ${escapeHtml(
+                            user.created_at
+                        )}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <h3>
+                Withdrawal History
+            </h3>
+
+
+            <div class="history">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${
+                            withdrawals.length
+
+                                ? withdrawals
+                                    .map(
+                                        withdrawal => `
+                                            <tr>
+
+                                                <td>
+                                                    ${Number(
+                                                        withdrawal.id
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    <strong>
+                                                        ${formatMoney(
+                                                            withdrawal.amount
+                                                        )}
+                                                    </strong>
+                                                </td>
+
+                                                <td>
+                                                    ${escapeHtml(
+                                                        withdrawal.method ||
+                                                        "GCash"
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    ${statusBadge(
+                                                        withdrawal.status
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    ${escapeHtml(
+                                                        withdrawal.created_at
+                                                    )}
+                                                </td>
+
+                                            </tr>
+                                        `
+                                    )
+                                    .join("")
+
+                                : `
+                                    <tr>
+                                        <td
+                                            colspan="5"
+                                            class="empty"
+                                        >
+                                            No withdrawal history.
+                                        </td>
+                                    </tr>
+                                `
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <h3>
+                Login History
+            </h3>
+
+
+            <div class="history">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Result</th>
+                            <th>IP</th>
+                            <th>Device</th>
+                            <th>Date</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${
+                            history.length
+
+                                ? history
+                                    .map(
+                                        log => `
+
+                                            <tr>
+
+                                                <td>
+                                                    ${
+                                                        Number(
+                                                            log.success
+                                                        ) === 1
+
+                                                            ? `
+                                                                <span
+                                                                    class="success"
+                                                                >
+                                                                    SUCCESS
+                                                                </span>
+                                                            `
+
+                                                            : `
+                                                                <span
+                                                                    class="failed"
+                                                                >
+                                                                    FAILED
+                                                                </span>
+                                                            `
+                                                    }
+                                                </td>
+
+                                                <td>
+                                                    ${escapeHtml(
+                                                        log.ip_address ||
+                                                        ""
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    ${escapeHtml(
+                                                        log.user_agent ||
+                                                        ""
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    ${escapeHtml(
+                                                        log.created_at
+                                                    )}
+                                                </td>
+
+                                            </tr>
+
+                                        `
+                                    )
+                                    .join("")
+
+                                : `
+                                    <tr>
+                                        <td
+                                            colspan="4"
+                                            class="empty"
+                                        >
+                                            No login history.
+                                        </td>
+                                    </tr>
+                                `
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        `;
+
+
+    } catch (error) {
+
+        userDetails.innerHTML =
+            `
+                <div class="error">
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </div>
+            `;
+
+    }
+
+}
+
+
+/* =====================================
+   LOAD WITHDRAWALS
+===================================== */
+
+async function loadWithdrawals() {
+
+    withdrawalsTable.innerHTML = `
+        <tr>
+            <td
+                colspan="10"
+                class="loading"
+            >
+                Loading withdrawals...
+            </td>
+        </tr>
+    `;
+
+
+    try {
+
+        const search =
+            withdrawalSearch
+                .value
+                .trim();
+
+
+        const status =
+            withdrawalStatus
+                .value;
+
+
+        const params =
+            new URLSearchParams();
+
+
+        if (search) {
+
+            params.set(
+                "search",
+                search
+            );
+
+        }
+
+
+        if (status) {
+
+            params.set(
+                "status",
+                status
+            );
+
+        }
+
+
+        const query =
+            params.toString();
+
+
+        const url =
+            query
+                ? `/api/admin/withdrawals?${query}`
+                : `/api/admin/withdrawals`;
+
+
+        const data =
+            await api(url);
+
+
+        renderWithdrawalSummary(
+            data.summary || {}
+        );
+
+
+        renderWithdrawals(
+            data.withdrawals || []
+        );
+
+
+    } catch (error) {
+
+        withdrawalsTable.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </td>
+            </tr>
+        `;
+
+        withdrawalCountText.textContent =
+            "Unable to load withdrawals.";
+
+    }
+
+}
+
+
+/* =====================================
+   RENDER SUMMARY
+===================================== */
+
+function renderWithdrawalSummary(
+    summary
+) {
+
+    const total =
+        Number(
+            summary.total || 0
+        );
+
+
+    const pending =
+        Number(
+            summary.pending || 0
+        );
+
+
+    const approved =
+        Number(
+            summary.approved || 0
+        );
+
+
+    const rejected =
+        Number(
+            summary.rejected || 0
+        );
+
+
+    document
+        .getElementById(
+            "summaryTotal"
+        )
+        .textContent =
+        total;
+
+
+    document
+        .getElementById(
+            "summaryPending"
+        )
+        .textContent =
+        pending;
+
+
+    document
+        .getElementById(
+            "summaryApproved"
+        )
+        .textContent =
+        approved;
+
+
+    document
+        .getElementById(
+            "summaryRejected"
+        )
+        .textContent =
+        rejected;
+
+
+    document
+        .getElementById(
+            "summaryPendingAmount"
+        )
+        .textContent =
+        formatMoney(
+            summary.pending_amount
+        );
+
+
+    document
+        .getElementById(
+            "summaryApprovedAmount"
+        )
+        .textContent =
+        formatMoney(
+            summary.approved_amount
+        );
+
+
+    document
+        .getElementById(
+            "summaryRejectedAmount"
+        )
+        .textContent =
+        formatMoney(
+            summary.rejected_amount
+        );
+
+
+    withdrawalCountText.textContent =
+        `${total} withdrawal request(s)`;
+
+
+    const pendingBadge =
+        document.getElementById(
+            "pendingBadge"
+        );
+
+
+    pendingBadge.textContent =
+        pending;
+
+
+    if (pending > 0) {
+
+        pendingBadge.classList.remove(
+            "hidden"
+        );
+
+    } else {
+
+        pendingBadge.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   RENDER WITHDRAWALS
+===================================== */
+
+function renderWithdrawals(
+    withdrawals
+) {
+
+    if (!withdrawals.length) {
+
+        withdrawalsTable.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    No withdrawals found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    withdrawalsTable.innerHTML =
+        withdrawals
+            .map(
+                withdrawal => {
+
+                    const status =
+                        String(
+                            withdrawal.status ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const userName =
+                        withdrawal.user_name ||
+                        "Unknown User";
+
+
+                    const phone =
+                        withdrawal.phone_number ||
+                        "";
+
+
+                    const gcashName =
+                        withdrawal.gcash_name ||
+                        "";
+
+
+                    const gcashNumber =
+                        withdrawal.gcash_number ||
+                        "";
+
+
+                    const method =
+                        withdrawal.method ||
+                        "GCash";
+
+
+                    const requested =
+                        withdrawal.created_at ||
+                        "";
+
+
+                    const processed =
+                        withdrawal.processed_at ||
+                        "";
+
+
+                    let actionButtons = `
+
+                        <button
+                            class="details-btn"
+                            onclick="
+                                viewWithdrawal(
+                                    ${Number(withdrawal.id)}
+                                )
+                            "
+                        >
+                            Details
+                        </button>
+
+                    `;
+
+
+                    if (
+                        status ===
+                        "pending"
+                    ) {
+
+                        actionButtons += `
+
+                            <button
+                                class="approve-btn"
+                                onclick="
+                                    approveWithdrawal(
+                                        ${Number(withdrawal.id)}
+                                    )
+                                "
+                            >
+                                Approve
+                            </button>
+
+
+                            <button
+                                class="reject-btn"
+                                onclick="
+                                    rejectWithdrawal(
+                                        ${Number(withdrawal.id)}
+                                    )
+                                "
+                            >
+                                Reject
+                            </button>
+
+                        `;
+
+                    }
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    #${Number(
+                                        withdrawal.id
+                                    )}
+                                </strong>
+                            </td>
+
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        userName
+                                    )}
+                                </strong>
+                            </td>
+
+
+                            <td>
+                                ${escapeHtml(
+                                    phone
+                                )}
+                            </td>
+
+
+                            <td>
+                                <span
+                                    class="amount"
+                                >
+                                    ${formatMoney(
+                                        withdrawal.amount
+                                    )}
+                                </span>
+                            </td>
+
+
+                            <td>
+
+                                <div
+                                    class="gcash"
+                                >
+
+                                    <div
+                                        class="gcash-name"
+                                    >
+                                        ${escapeHtml(
+                                            gcashName ||
+                                            "Not available"
+                                        )}
+                                    </div>
+
+                                    <div
+                                        class="gcash-number"
+                                    >
+                                        ${escapeHtml(
+                                            gcashNumber ||
+                                            "No number"
+                                        )}
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                ${escapeHtml(
+                                    method
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${statusBadge(
+                                    status
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${escapeHtml(
+                                    requested
+                                )}
+                            </td>
+
+
+                            <td>
+                                ${
+                                    processed
+                                        ? escapeHtml(
+                                            processed
+                                        )
+                                        : `
+                                            <span
+                                                class="muted"
+                                            >
+                                                —
+                                            </span>
+                                        `
+                                }
+                            </td>
+
+
+                            <td>
+
+                                <div
+                                    class="actions"
+                                >
+                                    ${actionButtons}
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+/* =====================================
+   WITHDRAWAL DETAILS
+===================================== */
+
+async function viewWithdrawal(
+    id
+) {
+
+    withdrawalModal.classList.remove(
+        "hidden"
+    );
+
+
+    withdrawalDetails.innerHTML =
+        "Loading...";
+
+
+    try {
+
+        const data =
+            await api(
+                `/api/admin/withdrawals/${id}`
+            );
+
+
+        const withdrawal =
+            data.withdrawal;
+
+
+        const status =
+            String(
+                withdrawal.status ||
+                ""
+            )
+            .toLowerCase();
+
+
+        const canProcess =
+            status === "pending";
+
+
+        withdrawalDetails.innerHTML = `
+
+            <div
+                class="withdrawal-info"
+            >
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Withdrawal ID
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        #${Number(
+                            withdrawal.id
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Status
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${statusBadge(
+                            status
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        User
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.user_name ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Phone
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.phone_number ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Amount
+                    </div>
+
+                    <div
+                        class="
+                            withdrawal-info-value
+                            withdrawal-amount
+                        "
+                    >
+                        ${formatMoney(
+                            withdrawal.amount
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Current User Balance
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${formatMoney(
+                            withdrawal.current_balance
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        GCash Name
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.gcash_name ||
+                            "Not available"
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        GCash Number
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.gcash_number ||
+                            "Not available"
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Method
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.method ||
+                            "GCash"
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Requested At
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${escapeHtml(
+                            withdrawal.created_at ||
+                            ""
+                        )}
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="withdrawal-info-box"
+                >
+
+                    <div
+                        class="withdrawal-info-label"
+                    >
+                        Processed At
+                    </div>
+
+                    <div
+                        class="withdrawal-info-value"
+                    >
+                        ${
+                            withdrawal.processed_at
+                                ? escapeHtml(
+                                    withdrawal.processed_at
+                                )
+                                : "Not processed"
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            ${
+                canProcess
+
+                    ? `
+
+                        <div
+                            class="modal-actions"
+                        >
+
+                            <button
+                                class="approve-btn"
+                                onclick="
+                                    approveWithdrawal(
+                                        ${Number(
+                                            withdrawal.id
+                                        )},
+                                        true
+                                    )
+                                "
+                            >
+                                Approve Withdrawal
+                            </button>
+
+
+                            <button
+                                class="reject-btn"
+                                onclick="
+                                    rejectWithdrawal(
+                                        ${Number(
+                                            withdrawal.id
+                                        )},
+                                        true
+                                    )
+                                "
+                            >
+                                Reject & Refund
+                            </button>
+
+                        </div>
+
+                    `
+
+                    : `
+                        <div
+                            class="muted"
+                            style="
+                                margin-top:15px;
+                            "
+                        >
+                            This withdrawal has already
+                            been processed.
+                        </div>
+                    `
+            }
+
+        `;
+
+
+    } catch (error) {
+
+        withdrawalDetails.innerHTML = `
+            <div class="error">
+                ${escapeHtml(
+                    error.message
+                )}
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =====================================
+   APPROVE WITHDRAWAL
+===================================== */
+
+async function approveWithdrawal(
+    id,
+    closeModalAfter = false
+) {
+
+    const ok =
+        confirm(
+            "Approve this withdrawal?\n\n" +
+            "The user's balance was already deducted " +
+            "when the withdrawal was submitted."
+        );
+
+
+    if (!ok) return;
+
+
+    try {
+
+        await api(
+            `/api/admin/withdrawals/${id}/approve`,
+            {
+                method:
+                    "POST"
+            }
+        );
+
+
+        showToast(
+            "Withdrawal approved successfully."
+        );
+
+
+        if (
+            closeModalAfter
+        ) {
+
+            withdrawalModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        await loadWithdrawals();
+
+        await loadUsers();
+
+
+    } catch (error) {
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   REJECT WITHDRAWAL
+===================================== */
+
+async function rejectWithdrawal(
+    id,
+    closeModalAfter = false
+) {
+
+    const ok =
+        confirm(
+            "Reject this withdrawal?\n\n" +
+            "The withdrawal amount will be refunded " +
+            "to the user's balance."
+        );
+
+
+    if (!ok) return;
+
+
+    try {
+
+        await api(
+            `/api/admin/withdrawals/${id}/reject`,
+            {
+                method:
+                    "POST"
+            }
+        );
+
+
+        showToast(
+            "Withdrawal rejected and balance refunded."
+        );
+
+
+        if (
+            closeModalAfter
+        ) {
+
+            withdrawalModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        await loadWithdrawals();
+
+        await loadUsers();
+
+
+    } catch (error) {
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   FREEZE USER
+===================================== */
+
+async function freezeUser(
+    id
+) {
+
+    const ok =
+        confirm(
+            "Freeze this account?"
+        );
+
+
+    if (!ok) return;
+
+
+    try {
+
+        await api(
+            `/api/admin/users/${id}/freeze`,
+            {
+                method:
+                    "POST"
+            }
+        );
+
+
+        showToast(
+            "Account frozen."
+        );
+
+
+        await loadUsers();
+
+
+    } catch (error) {
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   UNFREEZE USER
+===================================== */
+
+async function unfreezeUser(
+    id
+) {
+
+    const ok =
+        confirm(
+            "Unfreeze this account?"
+        );
+
+
+    if (!ok) return;
+
+
+    try {
+
+        await api(
+            `/api/admin/users/${id}/unfreeze`,
+            {
+                method:
+                    "POST"
+            }
+        );
+
+
+        showToast(
+            "Account unfrozen."
+        );
+
+
+        await loadUsers();
+
+
+    } catch (error) {
+
+        showToast(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   SEARCH
+===================================== */
+
+let searchTimer = null;
+
+
+withdrawalSearch.addEventListener(
+    "input",
+    () => {
+
+        clearTimeout(
+            searchTimer
+        );
+
+
+        searchTimer =
+            setTimeout(
+                loadWithdrawals,
+                350
+            );
+
+    }
+);
+
+
+/* =====================================
+   STATUS FILTER
+===================================== */
+
+withdrawalStatus.addEventListener(
+    "change",
+    loadWithdrawals
+);
+
+
+/* =====================================
+   CLEAR FILTERS
+===================================== */
+
+document
+    .getElementById(
+        "clearFiltersBtn"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            withdrawalSearch.value =
+                "";
+
+            withdrawalStatus.value =
+                "all";
+
+            loadWithdrawals();
+
+        }
+    );
+
+
+/* =====================================
+   REFRESH USERS
+===================================== */
+
+document
+    .getElementById(
+        "refreshUsersBtn"
+    )
+    .addEventListener(
+        "click",
+        loadUsers
+    );
+
+
+/* =====================================
+   REFRESH WITHDRAWALS
+===================================== */
+
+document
+    .getElementById(
+        "refreshWithdrawalsBtn"
+    )
+    .addEventListener(
+        "click",
+        loadWithdrawals
+    );
+
+
+/* =====================================
+   LOGOUT
+===================================== */
+
+document
+    .getElementById(
+        "logoutBtn"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                await api(
+                    "/api/admin/logout",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+            } catch {
+
+                /* Ignore logout error */
+
+            } finally {
+
+                hideAdmin();
+
+            }
+
+        }
+    );
+
+
+/* =====================================
+   CLOSE USER MODAL
+===================================== */
+
+document
+    .getElementById(
+        "closeModal"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            detailsModal.classList.add(
+                "hidden"
+            );
+
+        }
+    );
+
+
+/* =====================================
+   CLOSE WITHDRAWAL MODAL
+===================================== */
+
+document
+    .getElementById(
+        "closeWithdrawalModal"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            withdrawalModal.classList.add(
+                "hidden"
+            );
+
+        }
+    );
+
+
+/* =====================================
+   CLICK OUTSIDE USER MODAL
+===================================== */
+
+detailsModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            detailsModal
+        ) {
+
+            detailsModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   CLICK OUTSIDE WITHDRAWAL MODAL
+===================================== */
+
+withdrawalModal.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            withdrawalModal
+        ) {
+
+            withdrawalModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   ESC KEY
+===================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            detailsModal.classList.add(
+                "hidden"
+            );
+
+            withdrawalModal.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================
+   AUTO REFRESH WITHDRAWALS
+===================================== */
+
+function startWithdrawalAutoRefresh() {
+
+    stopWithdrawalAutoRefresh();
+
+
+    withdrawalTimer =
+        setInterval(
+            () => {
+
+                /*
+                 * Automatically checks for
+                 * new pending withdrawals
+                 * every 10 seconds.
+                 */
+
+                if (
+                    !adminPage.classList.contains(
+                        "hidden"
+                    )
+                ) {
+
+                    loadWithdrawals();
+
+                }
+
+            },
+            10000
+        );
+
+}
+
+
+function stopWithdrawalAutoRefresh() {
+
+    if (
+        withdrawalTimer
+    ) {
+
+        clearInterval(
+            withdrawalTimer
+        );
+
+        withdrawalTimer =
+            null;
+
+    }
+
+}
+
+
+/* =====================================
+   CHECK ADMIN SESSION
+===================================== */
+
+async function checkAdminSession() {
+
+    try {
+
+        await api(
+            "/api/admin/users"
+        );
+
+
+        showAdmin();
+
+
+    } catch {
+
+        loginPage.classList.remove(
+            "hidden"
+        );
+
+        adminPage.classList.add(
+            "hidden"
+        );
+
+        stopWithdrawalAutoRefresh();
+
+    }
+
+}
+
+
+/* =====================================
+   STATUS BADGE
+===================================== */
+
+function statusBadge(
+    status
+) {
+
+    const value =
+        String(
+            status || ""
+        )
+        .toLowerCase();
+
+
+    let className =
+        "pending-status";
+
+
+    let text =
+        "PENDING";
+
+
+    if (
+        value ===
+        "approved"
+    ) {
+
+        className =
+            "approved-status";
+
+        text =
+            "APPROVED";
+
+    }
+
+
+    if (
+        value ===
+        "rejected"
+    ) {
+
+        className =
+            "rejected-status";
+
+        text =
+            "REJECTED";
+
+    }
+
+
+    return `
+        <span
+            class="
+                status
+                ${className}
+            "
+        >
+            ${text}
+        </span>
+    `;
+
+}
+
+
+/* =====================================
+   MONEY FORMAT
+===================================== */
+
+function formatMoney(
+    value
+) {
+
+    const number =
+        Number(value || 0);
+
+
+    return (
+        "₱" +
+        number.toLocaleString(
+            "en-PH",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        )
+    );
+
+}
+
+
+/* =====================================
+   SECURITY HELPERS
+===================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+    .replaceAll(
+        "&",
+        "&amp;"
+    )
+    .replaceAll(
+        "<",
+        "&lt;"
+    )
+    .replaceAll(
+        ">",
+        "&gt;"
+    )
+    .replaceAll(
+        '"',
+        "&quot;"
+    )
+    .replaceAll(
+        "'",
+        "&#039;"
+    );
+
+}
+
+
+function shorten(
+    value,
+    length
+) {
+
+    value =
+        String(value);
+
+
+    if (
+        value.length <=
+        length
+    ) {
+
+        return value;
+
+    }
+
+
+    return (
+        value.substring(
+            0,
+            length
+        ) +
+        "..."
+    );                  
+
+}
+
+
+/* =====================================
+   START
+===================================== */
+
+checkAdminSession();
+
+</script>
+
+</body>
+</html>
+
+

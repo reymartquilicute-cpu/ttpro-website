@@ -2,8 +2,10 @@ const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
-// On Railway, use /data volume if available, otherwise local
-const dataDir = process.env.RAILWAY_VOLUME_MOUNT_PATH || __dirname;
+// Railway persistent volume, otherwise project directory
+const dataDir =
+    process.env.RAILWAY_VOLUME_MOUNT_PATH || __dirname;
+
 if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -15,24 +17,93 @@ const db = new Database(
 db.pragma("foreign_keys = ON");
 
 /* ========================================
+   HELPERS
+======================================== */
+
+function getColumns(table) {
+    return db
+        .prepare(`PRAGMA table_info(${table})`)
+        .all()
+        .map(row => row.name);
+}
+
+/* ========================================
    USERS
 ======================================== */
 
 db.exec(`
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
         name TEXT NOT NULL,
-        phone TEXT NOT NULL UNIQUE,
+        phone TEXT,
         password_hash TEXT,
-        verified INTEGER NOT NULL DEFAULT 0,
+        verified INTEGER NOT NULL DEFAULT 1,
         status TEXT NOT NULL DEFAULT 'active',
         last_ip TEXT,
         last_device TEXT,
         last_login TEXT,
-        created_at TEXT NOT NULL
+        balance REAL NOT NULL DEFAULT 0,
+        invitation_code TEXT UNIQUE,
+        referred_by INTEGER,
+        total_referrals INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL,
+
+        FOREIGN KEY (referred_by)
+            REFERENCES users(id)
+            ON DELETE SET NULL
     )
 `);
 
+/* ========================================
+   USERNAME MIGRATION
+======================================== */
+
+let userColumns = getColumns("users");
+
+if (!userColumns.includes("username")) {
+    db.exec(`
+        ALTER TABLE users
+        ADD COLUMN username TEXT
+    `);
+
+    console.log("Added users.username");
+}
+
+/*
+ * Old accounts may have no username.
+ * Generate a temporary unique username from their ID.
+ */
+const usersWithoutUsername = db
+    .prepare(`
+        SELECT id, name
+        FROM users
+        WHERE username IS NULL OR TRIM(username) = ''
+    `)
+    .all();
+
+for (const user of usersWithoutUsername) {
+    const base = String(user.name || "user")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "")
+        .substring(0, 20) || "user";
+
+    let username = `${base}${user.id}`;
+
+    while (
+        db
+            .prepare("SELECT id FROM users WHERE username = ?")
+            .get(username)
+    ) {
+        username = `${base}${user.id}${Math.floor(Math.random() * 1000)}`;
+    }
+
+    db.prepare(`
+        UPDATE users
+        SET username = ?
+        WHERE id = ?
+    `).run(username, user.id);
+}
 
 /* ========================================
    ADMINS
@@ -46,7 +117,6 @@ db.exec(`
         created_at TEXT NOT NULL
     )
 `);
-
 
 /* ========================================
    LOGIN HISTORY
@@ -67,20 +137,8 @@ db.exec(`
     )
 `);
 
-
 /* ========================================
-   DATABASE MIGRATIONS
-======================================== */
-
-function getColumns(table) {
-    return db
-        .prepare(`PRAGMA table_info(${table})`)
-        .all()
-        .map(row => row.name);
-}
-
-/* ========================================
-   DASHBOARD TABLES
+   SETTLEMENTS
 ======================================== */
 
 db.exec(`
@@ -98,6 +156,10 @@ db.exec(`
     )
 `);
 
+/* ========================================
+   NOTIFICATIONS
+======================================== */
+
 db.exec(`
     CREATE TABLE IF NOT EXISTS notifications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -112,13 +174,6 @@ db.exec(`
             ON DELETE CASCADE
     )
 `);
-
-/* balance migration */
-let dashboardUserColumns = getColumns('users');
-if (!dashboardUserColumns.includes('balance')) {
-    db.exec(`ALTER TABLE users ADD COLUMN balance REAL NOT NULL DEFAULT 0`);
-    console.log('Added users.balance');
-}
 
 /* ========================================
    WITHDRAWALS
@@ -135,6 +190,7 @@ db.exec(`
         status TEXT NOT NULL DEFAULT 'Pending',
         note TEXT,
         created_at TEXT NOT NULL,
+        processed_at TEXT,
 
         FOREIGN KEY (user_id)
             REFERENCES users(id)
@@ -157,131 +213,175 @@ db.exec(`
 
         FOREIGN KEY (owner_id)
             REFERENCES users(id)
+            ON DELETE CASCADE,
+
+        FOREIGN KEY (used_by)
+            REFERENCES users(id)
+            ON DELETE SET NULL
+    )
+`);
+
+/* ========================================
+   TASKS
+======================================== */
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT,
+        reward REAL NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'active',
+        created_at TEXT NOT NULL
+    )
+`);
+
+/* ========================================
+   TASK COMPLETIONS
+======================================== */
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS task_completions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        task_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        proof TEXT,
+        status TEXT NOT NULL DEFAULT 'Pending',
+        reviewed_at TEXT,
+        created_at TEXT NOT NULL,
+
+        FOREIGN KEY (task_id)
+            REFERENCES tasks(id)
+            ON DELETE CASCADE,
+
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
             ON DELETE CASCADE
     )
 `);
 
-/* invitation_code column on users */
-let inviteUserColumns = getColumns('users');
-if (!inviteUserColumns.includes('invitation_code')) {
-    db.exec(`ALTER TABLE users ADD COLUMN invitation_code TEXT`);
-    console.log('Added users.invitation_code');
-}
-if (!inviteUserColumns.includes('referred_by')) {
-    db.exec(`ALTER TABLE users ADD COLUMN referred_by INTEGER`);
-    console.log('Added users.referred_by');
-}
-if (!inviteUserColumns.includes('total_referrals')) {
-    db.exec(`ALTER TABLE users ADD COLUMN total_referrals INTEGER NOT NULL DEFAULT 0`);
-    console.log('Added users.total_referrals');
-}
-
-
-
 /* ========================================
-   USERS MIGRATION
+   GLOBAL CHAT
 ======================================== */
 
-let userColumns = getColumns("users");
+db.exec(`
+    CREATE TABLE IF NOT EXISTS chat_messages (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        message TEXT NOT NULL,
+        created_at TEXT NOT NULL,
 
+        FOREIGN KEY (user_id)
+            REFERENCES users(id)
+            ON DELETE CASCADE
+    )
+`);
 
-if (!userColumns.includes("password_hash")) {
+db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_chat_created
+    ON chat_messages (created_at DESC)
+`);
 
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN password_hash TEXT
-    `);
-
-    console.log(
-        "Added users.password_hash"
-    );
-}
-
-
-/* verified */
-
-userColumns = getColumns("users");
-
-if (!userColumns.includes("verified")) {
-
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN verified INTEGER NOT NULL DEFAULT 0
-    `);
-
-    console.log(
-        "Added users.verified"
-    );
-}
-
-
-/* status */
+/* ========================================
+   USERS MIGRATIONS
+======================================== */
 
 userColumns = getColumns("users");
 
-if (!userColumns.includes("status")) {
+const migrations = [
+    {
+        column: "password_hash",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN password_hash TEXT
+        `
+    },
+    {
+        column: "verified",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN verified INTEGER NOT NULL DEFAULT 1
+        `
+    },
+    {
+        column: "status",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN status TEXT NOT NULL DEFAULT 'active'
+        `
+    },
+    {
+        column: "last_ip",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN last_ip TEXT
+        `
+    },
+    {
+        column: "last_device",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN last_device TEXT
+        `
+    },
+    {
+        column: "last_login",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN last_login TEXT
+        `
+    },
+    {
+        column: "balance",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN balance REAL NOT NULL DEFAULT 0
+        `
+    },
+    {
+        column: "phone",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN phone TEXT
+        `
+    },
+    {
+        column: "invitation_code",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN invitation_code TEXT
+        `
+    },
+    {
+        column: "referred_by",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN referred_by INTEGER
+        `
+    },
+    {
+        column: "total_referrals",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN total_referrals INTEGER NOT NULL DEFAULT 0
+        `
+    },
+    {
+        column: "avatar",
+        sql: `
+            ALTER TABLE users
+            ADD COLUMN avatar TEXT
+        `
+    }
+];
 
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN status TEXT NOT NULL DEFAULT 'active'
-    `);
-
-    console.log(
-        "Added users.status"
-    );
+for (const migration of migrations) {
+    if (!userColumns.includes(migration.column)) {
+        db.exec(migration.sql);
+        console.log(`Added users.${migration.column}`);
+        userColumns = getColumns("users");
+    }
 }
-
-
-/* last_ip */
-
-userColumns = getColumns("users");
-
-if (!userColumns.includes("last_ip")) {
-
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN last_ip TEXT
-    `);
-
-    console.log(
-        "Added users.last_ip"
-    );
-}
-
-
-/* last_device */
-
-userColumns = getColumns("users");
-
-if (!userColumns.includes("last_device")) {
-
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN last_device TEXT
-    `);
-
-    console.log(
-        "Added users.last_device"
-    );
-}
-
-
-/* last_login */
-
-userColumns = getColumns("users");
-
-if (!userColumns.includes("last_login")) {
-
-    db.exec(`
-        ALTER TABLE users
-        ADD COLUMN last_login TEXT
-    `);
-
-    console.log(
-        "Added users.last_login"
-    );
-}
-
 
 /* ========================================
    OLD PASSWORD MIGRATION
@@ -293,7 +393,6 @@ if (
     userColumns.includes("password") &&
     userColumns.includes("password_hash")
 ) {
-
     db.exec(`
         UPDATE users
         SET password_hash = password
@@ -302,40 +401,40 @@ if (
             AND password IS NOT NULL
     `);
 
-    console.log(
-        "Migrated old passwords to password_hash"
-    );
+    console.log("Migrated old passwords.");
 }
 
-
 /* ========================================
-   FINAL DATABASE CHECK
+   FINAL CHECK
 ======================================== */
 
 console.log("");
 console.log("=================================");
 console.log("TTPRO DATABASE READY");
 console.log("=================================");
-console.log("Users:", db
-    .prepare("SELECT COUNT(*) AS count FROM users")
-    .get()
-    .count
+
+console.log(
+    "Users:",
+    db.prepare(
+        "SELECT COUNT(*) AS count FROM users"
+    ).get().count
 );
 
-console.log("Admins:", db
-    .prepare("SELECT COUNT(*) AS count FROM admins")
-    .get()
-    .count
+console.log(
+    "Admins:",
+    db.prepare(
+        "SELECT COUNT(*) AS count FROM admins"
+    ).get().count
 );
 
-console.log("Login History:", db
-    .prepare("SELECT COUNT(*) AS count FROM login_history")
-    .get()
-    .count
+console.log(
+    "Login History:",
+    db.prepare(
+        "SELECT COUNT(*) AS count FROM login_history"
+    ).get().count
 );
 
 console.log("=================================");
 console.log("");
-
 
 module.exports = db;

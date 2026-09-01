@@ -6,34 +6,48 @@
 <title>TTPRO — Admin Panel</title>
 <style>
 :root{
-  --bg:#08060a;
-  --bg2:#0e0b12;
-  --panel:#13101a;
-  --panel2:#1a1625;
-  --border:#2a2338;
-  --border2:#3a3050;
-  --gold:#f0c040;
-  --gold2:#ffd96a;
-  --gold3:#b8860b;
-  --gold-glow:rgba(240,192,64,0.18);
+  --bg:#0a1628;
+  --bg2:#1a2a4a;
+  --panel:#15233d;
+  --panel2:#0f1f3a;
+  --border:#2563eb;
+  --border2:#3b82f6;
+  --gold:#2563eb;
+  --gold2:#60a5fa;
+  --gold3:#1e40af;
+  --gold-glow:rgba(37,99,235,0.18);
   --red:#c0392b;
   --red2:#e74c3c;
   --red3:#ff6b6b;
-  --green:#1a7a3a;
-  --green2:#27ae60;
-  --green3:#2ecc71;
-  --text:#f0ead8;
-  --muted:#8a7e6a;
-  --muted2:#5a5048;
+  --green:#10b981;
+  --green2:#34d399;
+  --green3:#6ee7b7;
+  --text:#f4f7fb;
+  --muted:#a5b4c4;
+  --muted2:#718397;
   --radius:12px;
   --shadow:0 24px 80px rgba(0,0,0,.7);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+body{font-family:'Segoe UI',Arial,sans-serif;background:linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0f1f3a 100%);color:var(--text);min-height:100vh;font-size:14px}
 button,input,select,textarea{font:inherit;outline:none}
 button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(37,99,235,.75);outline-offset:2px}
 .hidden{display:none!important}
+
+/* Modern blue admin theme */
+:root{--bg:#0a1628;--bg2:#15233d;--panel:#1a2a4a;--panel2:#0f1f3a;--border:#2563eb;--border2:#3b82f6;--gold:#2563eb;--gold2:#60a5fa;--gold3:#1e40af;--red:#c0392b;--red2:#e74c3c;--red3:#ff6b6b;--green:#10b981;--green2:#34d399;--green3:#6ee7b7;--text:#f4f7fb;--muted:#a5b4c4;--muted2:#718397}
+body{background:linear-gradient(135deg, rgba(10,20,35,.96) 0%, rgba(20,30,45,.96) 100%)}
+.topbar{background:rgba(10,20,35,.96);border-color:var(--border2)}
+.nav-tabs{background:rgba(20,30,50,.96);border-color:var(--border)}
+.stat-card,.card,.modal-box,.login-card{background:linear-gradient(135deg,rgba(20,30,50,.95) 0%, rgba(15,25,45,.95) 100%);border-color:var(--border)}
+.table th{background:rgba(10,20,35,.5);color:var(--gold2)}
+.group input,.cash-form textarea,#notifUser,#notifMsg,#taskDesc{background:rgba(20,30,50,.5)!important;border-color:var(--border)!important}
+.btn-gold{background:linear-gradient(135deg,#2563eb 0%, #3b82f6 100%);color:#fff}
+.modal-overlay{background:rgba(10,20,35,.82)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar{width:5px;height:5px}
@@ -336,6 +350,7 @@ button{cursor:pointer}
   <nav class="nav-tabs">
     <button class="nav-tab active" data-tab="users">👥 Users</button>
     <button class="nav-tab" data-tab="withdrawals">💸 Withdrawals</button>
+    <button class="nav-tab" data-tab="tasks">💼 Tasks</button>
     <button class="nav-tab" data-tab="notifications">🔔 Notifications</button>
   </nav>
 
@@ -446,6 +461,81 @@ button{cursor:pointer}
           <div id="notifErr" class="form-err"></div>
           <button class="btn-gold" type="submit">Send Notification</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TASKS TAB ══ -->
+  <div id="tab-tasks" class="page hidden">
+    <div class="page-title">Earn Tasks</div>
+    <div class="page-sub">Create tasks, review user submissions and credit rewards</div>
+
+    <div class="card" style="max-width:540px">
+      <div class="card-head"><h2>➕ Create Task</h2></div>
+      <div style="padding:20px">
+        <form id="taskForm">
+          <div class="group">
+            <label>Task Title</label>
+            <input id="taskTitle" type="text" placeholder="e.g. Like our Facebook page" required>
+          </div>
+          <div class="group">
+            <label>Description</label>
+            <textarea id="taskDesc" style="width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--border2);background:var(--bg2);color:var(--text);resize:vertical;min-height:70px;font:inherit" placeholder="What the user needs to do..."></textarea>
+          </div>
+          <div class="group">
+            <label>Reward (₱)</label>
+            <input id="taskReward" type="number" min="1" step="0.01" placeholder="5.00" required>
+          </div>
+          <div id="taskErr" class="form-err"></div>
+          <button class="btn-gold" type="submit">Create Task</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>All Tasks</h2>
+        <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadAdminTasks()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Reward</th>
+              <th>Submissions</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="taskBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>User Submissions</h2>
+        <button class="act-btn act-details" style="padding:8px 14px;" onclick="loadAdminCompletions()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>User</th>
+              <th>Task</th>
+              <th>Proof</th>
+              <th>Reward</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="taskCompBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -612,15 +702,17 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
     document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     const tab = btn.dataset.tab;
-    ['users','withdrawals','notifications'].forEach(t => {
+    ['users','withdrawals','tasks','notifications'].forEach(t => {
       $(`tab-${t}`).classList.toggle('hidden', t !== tab);
     });
     if (tab === 'withdrawals') loadWithdrawals();
+    if (tab === 'tasks') { loadAdminTasks(); loadAdminCompletions(); }
   };
 });
 
 /* ═══════════ USERS ═══════════ */
 async function loadUsers() {
+  $('usersBody').innerHTML = '<tr><td colspan="10"><div class="empty">Loading users…</div></td></tr>';
   try {
     const d = await api('/api/admin/users');
     allUsers = d.users || [];
@@ -845,6 +937,7 @@ $('cashForm').onsubmit = async e => {
 
 /* ═══════════ WITHDRAWALS ═══════════ */
 async function loadWithdrawals() {
+  $('wdBody').innerHTML = '<tr><td colspan="8"><div class="empty">Loading withdrawals…</div></td></tr>';
   try {
     const d = await api('/api/admin/withdrawals');
     const list = d.withdrawals || [];
@@ -892,7 +985,7 @@ async function updateWithdrawal(id, status) {
     `Are you sure you want to ${label} withdrawal #${id}?`,
     async () => {
       try {
-        await api(`/api/admin/withdrawals/${id}/status`, { method:'POST', body:JSON.stringify({ status }) });
+        await api(`/api/admin/withdrawals/${id}/${status === 'Approved' ? 'approve' : 'reject'}`, { method:'POST' });
         toast(`Withdrawal ${status.toLowerCase()}`, 'ok');
         await loadWithdrawals();
       } catch(err) {
@@ -935,6 +1028,120 @@ $('notifForm').onsubmit = async e => {
     const btn = e.target.querySelector('.btn-gold');
     btn.textContent = 'Send Notification'; btn.disabled = false;
   }
+};
+
+/* ═══════════ TASKS ═══════════ */
+async function loadAdminTasks() {
+  try {
+    const d = await api('/api/admin/tasks');
+    renderAdminTasks(d.tasks || []);
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+function renderAdminTasks(tasks) {
+  const body = $('taskBody');
+  if (!tasks.length) {
+    body.innerHTML = `<tr><td colspan="7"><div class="empty"><div class="empty-icon">💼</div>No tasks yet. Create one above!</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = tasks.map(t => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${t.id}</td>
+      <td><strong>${esc(t.title)}</strong><div style="color:var(--muted);font-size:12px">${esc(t.description || '')}</div></td>
+      <td><strong style="color:var(--green3)">${money(t.reward)}</strong></td>
+      <td style="color:var(--muted)">${t.submissions || 0} <span style="color:var(--gold2)">(${t.pending_submissions || 0} pending)</span></td>
+      <td><span class="pill ${t.status === 'active' ? 'active' : 'frozen'}">${esc(t.status)}</span></td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${fmtDate(t.created_at)}</td>
+      <td>
+        <div class="acts">
+          ${t.status === 'active'
+            ? `<button class="act-btn act-freeze" onclick="toggleTaskStatus(${t.id},'inactive')">Deactivate</button>`
+            : `<button class="act-btn act-unfreeze" onclick="toggleTaskStatus(${t.id},'active')">Activate</button>`}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function toggleTaskStatus(id, status) {
+  try {
+    const d = await api(`/api/admin/tasks/${id}/status`, {
+      method: 'POST',
+      body: JSON.stringify({ status })
+    });
+    toast(d.message, 'ok');
+    loadAdminTasks();
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+async function loadAdminCompletions() {
+  try {
+    const d = await api('/api/admin/task-completions');
+    renderAdminCompletions(d.completions || []);
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+function renderAdminCompletions(list) {
+  const body = $('taskCompBody');
+  if (!list.length) {
+    body.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📨</div>No submissions yet.</div></td></tr>`;
+    return;
+  }
+  body.innerHTML = list.map(c => `
+    <tr>
+      <td style="color:var(--muted);font-size:12px">#${c.id}</td>
+      <td><strong>${esc(c.user_name)}</strong><div style="color:var(--muted);font-size:12px">${esc(c.user_email || '')}</div></td>
+      <td>${esc(c.task_title)}</td>
+      <td style="max-width:200px;color:var(--muted);font-size:12px"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.proof || '')}">${esc(c.proof || '—')}</div></td>
+      <td><strong style="color:var(--green3)">${money(c.task_reward)}</strong></td>
+      <td><span class="pill ${(c.status||'').toLowerCase()}">${esc(c.status)}</span></td>
+      <td style="color:var(--muted);font-size:12px;white-space:nowrap">${fmtDate(c.created_at)}</td>
+      <td>
+        <div class="acts">
+          ${c.status === 'Pending'
+            ? `<button class="act-btn act-cash" onclick="reviewCompletion(${c.id},'Approved')">✓ Approve</button>
+               <button class="act-btn act-freeze" onclick="reviewCompletion(${c.id},'Rejected')">✗ Reject</button>`
+            : '<span style="color:var(--muted2);font-size:12px">—</span>'}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function reviewCompletion(id, status) {
+  const label = status === 'Approved' ? 'approve' : 'reject';
+  if (status === 'Rejected' && !confirm(`Review this submission as ${status}? Reward will be credited if approved.`)) return;
+  try {
+    const d = await api(`/api/admin/task-completions/${id}/review`, {
+      method: 'POST',
+      body: JSON.stringify({ status })
+    });
+    toast(d.message, 'ok');
+    await loadAdminCompletions();
+  } catch(err) { toast(err.message, 'err'); }
+}
+
+$('taskForm').onsubmit = async e => {
+  e.preventDefault();
+  $('taskErr').textContent = '';
+  const btn = e.target.querySelector('.btn-gold');
+  btn.textContent = 'Creating...'; btn.disabled = true;
+  try {
+    await api('/api/admin/tasks', {
+      method: 'POST',
+      body: JSON.stringify({
+        title: $('taskTitle').value.trim(),
+        description: $('taskDesc').value.trim(),
+        reward: $('taskReward').value
+      })
+    });
+    toast('Task created!', 'ok');
+    $('taskTitle').value = '';
+    $('taskDesc').value = '';
+    $('taskReward').value = '';
+    loadAdminTasks();
+  } catch(err) {
+    $('taskErr').textContent = err.message;
+  }
+  btn.textContent = 'Create Task'; btn.disabled = false;
 };
 
 /* ═══════════ AUTO-LOGIN CHECK ═══════════ */
