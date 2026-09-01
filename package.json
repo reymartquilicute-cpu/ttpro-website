@@ -1,25 +1,43 @@
 {
-  "name": "ttpro-otp",
-  "version": "1.0.0",
-  "description": "TTPRO Dashboard",
-  "main": "server.js",
+  "name": "mines-vault-demo",
+  "version": "0.1.0",
+  "private": true,
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "build": "npm rebuild better-sqlite3"
+    "install:ci": "bash scripts/install-ci.sh",
+    "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
+    "build": "bash scripts/build-verified.sh",
+    "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
+    "db:generate": "bash scripts/sites-env.sh -- drizzle-kit generate"
   },
   "dependencies": {
-    "better-sqlite3": "^13.0.3",
-    "dotenv": "^16.6.1",
-    "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "nodemailer": "^9.0.6"
+    "drizzle-orm": "0.45.2",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module",
+  "displayName": "Mines Vault Demo"
 }
